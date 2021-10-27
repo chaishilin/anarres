@@ -1,0 +1,22 @@
+package com.csl.anarres.service;
+
+import com.csl.anarres.entity.UserEntity;
+
+import java.util.List;
+
+public interface UserService {
+    /**
+     * 注册用户
+     * @param user
+     * @return
+     */
+    UserEntity register(UserEntity user);
+
+    /**
+     * 登录
+     * @param user
+     * @return
+     */
+    UserEntity login(UserEntity user);
+    List<UserEntity> find();
+}
