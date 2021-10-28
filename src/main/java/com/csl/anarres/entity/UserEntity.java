@@ -13,8 +13,8 @@ import java.util.Date;
 public class UserEntity {
     @TableId(value = "ID",type = IdType.INPUT)
     private int id;
-    @TableField("NAME")
-    private String name;
+    @TableField("USERNAME")
+    private String username;
     @TableField("PASSWORD")
     private String password;
     @TableField("CREATETIME")

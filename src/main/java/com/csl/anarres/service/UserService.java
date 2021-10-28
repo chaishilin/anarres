@@ -18,5 +18,12 @@ public interface UserService {
      * @return
      */
     UserEntity login(UserEntity user);
+
+    /**
+     * 根据用户信息生成token
+     * @param user
+     * @return
+     */
+    String generateToken(UserEntity user);
     List<UserEntity> find();
 }

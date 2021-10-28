@@ -1,14 +1,16 @@
 package com.csl.anarres.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.csl.anarres.mapper.UserMapper;
 import com.csl.anarres.entity.UserEntity;
+import com.csl.anarres.mapper.UserMapper;
 import com.csl.anarres.service.UserService;
+import com.csl.anarres.utils.hashcodeBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -18,7 +20,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserEntity register(UserEntity user){
         QueryWrapper<UserEntity> qw = new QueryWrapper<>();
-        qw.eq("NAME",user.getName());
+        qw.eq("USERNAME",user.getUsername());
         List<UserEntity> userEntityList = userMapper.selectList(qw);
         if(userEntityList.size() > 0){
             throw new RuntimeException("用户名重复！");
@@ -34,7 +36,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserEntity login(UserEntity user){
         QueryWrapper<UserEntity> qw = new QueryWrapper<>();
-        qw.eq("NAME",user.getName());
+        qw.eq("USERNAME",user.getUsername());
         List<UserEntity> userEntityList = userMapper.selectList(qw);
         if(userEntityList.size() == 0){
             throw new RuntimeException("用户名错误！");
@@ -47,6 +49,17 @@ public class UserServiceImpl implements UserService {
         assert userEntityList.size() == 1;
         return userEntityList.get(0);
     }
+    @Override
+    public String generateToken(UserEntity user){
+        StringBuilder token = new StringBuilder();
+        token.append("csl");
+        token.append(user.getUsername());
+        token.append(new Date());
+        Random random = new Random();
+        token.append(random.nextInt(10000));
+        return hashcodeBuilder.getHashcode(token.toString());
+    }
+
     @Override
     public List<UserEntity> find(){
         return userMapper.find();
