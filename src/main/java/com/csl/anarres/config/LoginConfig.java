@@ -7,6 +7,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
+ * 登录拦截器设置
  * @author: Shilin Chai
  * @Date: 2021/10/28 18:18
  * @Description:

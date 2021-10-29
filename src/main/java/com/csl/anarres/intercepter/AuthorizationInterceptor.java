@@ -1,7 +1,10 @@
 package com.csl.anarres.intercepter;
 
+import com.alibaba.fastjson.JSONObject;
 import com.csl.anarres.utils.RedisUtil;
+import com.csl.anarres.utils.ResponseTemplate;
 import com.csl.anarres.utils.ResponseUtil;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -19,17 +22,20 @@ import java.io.PrintWriter;
 public class AuthorizationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler){
+        String userName = "";
+        PrintWriter printWriter = null;
         String token  = request.getHeader("token");
         Jedis jedis = RedisUtil.getInstance();
-        String userName = jedis.get(token);
-        PrintWriter printWriter = null;
         try {
-            if(userName == null ){
+            if(token != null){
+                userName = jedis.get(token);
+            }
+            if(token == null || "".equals(token) || userName == null || "".equals(userName)){
                 printWriter = response.getWriter();
-                printWriter.println(ResponseUtil.fail("log first please"));
+                ResponseTemplate responseMsg = ResponseUtil.fail(HttpStatus.UNAUTHORIZED.value(),"please login");
+                printWriter.println(JSONObject.toJSONString(responseMsg));
                 return false;
             }
-
         }catch (Exception e){
             e.printStackTrace();
         }finally {

@@ -25,4 +25,11 @@ public class ResponseUtil {
         msg.setMsg(message);
         return msg;
     }
+
+    public static ResponseTemplate fail(int code,String message){
+        ResponseTemplate msg = new ResponseTemplate();
+        msg.setCode(code);
+        msg.setMsg(message);
+        return msg;
+    }
 }

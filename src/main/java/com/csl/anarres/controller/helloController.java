@@ -20,10 +20,10 @@ public class helloController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/find")
-    public ResponseTemplate find(){
+    @GetMapping("/userInfoList")
+    public ResponseTemplate userInfoList(){
         try {
-            List<UserEntity> userEntityList = userService.find();
+            List<UserEntity> userEntityList = userService.userInfoList();
             return ResponseUtil.success("查询成功",userEntityList);
         }catch (Exception e){
             return ResponseUtil.fail(e.getMessage());
@@ -37,8 +37,7 @@ public class helloController {
             userService.login(user);
             String token = userService.generateToken(user);
             Jedis jedis = RedisUtil.getInstance();
-            //jedis.setex(user.getUsername(),(long)60*10,token);
-            jedis.setex(token,(long)60*5,user.getUsername());
+            jedis.setex(token,(long)5,user.getUsername());
             result.put("token",token);
             return ResponseUtil.success("登陆成功",result);
         }catch (Exception e){

@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.csl.anarres.mapper.UserMapper">
 
-    <select id="find" resultType="com.csl.anarres.entity.UserEntity">
+    <select id="userInfoList" resultType="com.csl.anarres.entity.UserEntity">
         select * from user;
     </select>
 </mapper>

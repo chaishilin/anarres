@@ -25,5 +25,5 @@ public interface UserService {
      * @return
      */
     String generateToken(UserEntity user);
-    List<UserEntity> find();
+    List<UserEntity> userInfoList();
 }
