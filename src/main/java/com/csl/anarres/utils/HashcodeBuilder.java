@@ -8,8 +8,8 @@ import java.security.MessageDigest;
  * @Date: 2021/10/28 15:41
  * @Description:
  */
-public class hashcodeBuilder {
-    private hashcodeBuilder(){}
+public class HashcodeBuilder {
+    private HashcodeBuilder(){}
     public static String getHashcode(String str){
         return getHashcode(str,"MD5");
     }

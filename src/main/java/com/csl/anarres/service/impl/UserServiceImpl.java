@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.csl.anarres.entity.UserEntity;
 import com.csl.anarres.mapper.UserMapper;
 import com.csl.anarres.service.UserService;
-import com.csl.anarres.utils.hashcodeBuilder;
+import com.csl.anarres.utils.HashcodeBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +19,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity register(UserEntity user){
+        user.setPassword(HashcodeBuilder.getHashcode(user.getPassword()));
         QueryWrapper<UserEntity> qw = new QueryWrapper<>();
         qw.eq("USERNAME",user.getUsername());
         List<UserEntity> userEntityList = userMapper.selectList(qw);
@@ -35,6 +36,7 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public UserEntity login(UserEntity user){
+        user.setPassword(HashcodeBuilder.getHashcode(user.getPassword()));
         QueryWrapper<UserEntity> qw = new QueryWrapper<>();
         qw.eq("USERNAME",user.getUsername());
         List<UserEntity> userEntityList = userMapper.selectList(qw);
@@ -57,7 +59,7 @@ public class UserServiceImpl implements UserService {
         token.append(new Date());
         Random random = new Random();
         token.append(random.nextInt(10000));
-        return hashcodeBuilder.getHashcode(token.toString());
+        return HashcodeBuilder.getHashcode(token.toString());
     }
 
     @Override

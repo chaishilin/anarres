@@ -3,7 +3,12 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.csl.anarres.mapper.UserMapper">
 
+    <sql id="userColumnAll">
+        ID,USERNAME,CREATETIME,LASTMODIFIEDTIME
+    </sql>
     <select id="userInfoList" resultType="com.csl.anarres.entity.UserEntity">
-        select * from user;
+        select
+        <include refid="userColumnAll"/>
+        from user;
     </select>
 </mapper>
