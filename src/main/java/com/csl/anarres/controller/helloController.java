@@ -37,7 +37,7 @@ public class helloController {
             userService.login(user);
             String token = userService.generateToken(user);
             Jedis jedis = RedisUtil.getInstance();
-            jedis.setex(token,(long)5,user.getUsername());
+            jedis.setex(token,(long)60*60,user.getUsername());
             result.put("token",token);
             return ResponseUtil.success("登陆成功",result);
         }catch (Exception e){
