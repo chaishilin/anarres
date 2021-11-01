@@ -12,5 +12,7 @@ public class ProgramEntity {
     String language;
     String code;
     String className;
+    String input;//程序的输入(main函数中的String[] args)
     String output;//程序的输出
+
 }

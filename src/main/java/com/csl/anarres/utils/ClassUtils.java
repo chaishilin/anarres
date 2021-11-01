@@ -12,6 +12,9 @@ import java.util.Date;
 public class ClassUtils {
     public static void changeClassContent(ProgramEntity entity, String filename){
         String content = entity.getCode();
+        if(!content.contains("Main")){
+            throw new RuntimeException("class的名称需要是Main");
+        }
         String[] results = content.split("Main");//其实还是用正则匹配比较好
         StringBuffer newContent = new StringBuffer();
         newContent.append(results[0]);

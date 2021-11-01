@@ -1,5 +1,7 @@
 package com.csl.anarres.utils;
 
+import com.csl.anarres.exception.RunProgramException;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
@@ -11,6 +13,7 @@ import java.io.InputStreamReader;
 public class CMDUtils {
     public static String execCMD(String command){
         StringBuilder result = new StringBuilder();
+        StringBuilder errorResult = new StringBuilder();
         Process process = null;
         command = "cmd.exe /c " + command;
         try {
@@ -21,10 +24,21 @@ public class CMDUtils {
             while ((line = bufferedReader.readLine()) != null){
                 result.append(line+"\n");
             }
+
+            BufferedReader bufferedErrorReader = new BufferedReader(
+                    new InputStreamReader(process.getErrorStream(),"GBK"));
+            String errorLine = null;
+            while ((errorLine = bufferedErrorReader.readLine()) != null){
+                errorResult.append(errorLine+"\n");
+            }
+
+            if(errorResult.toString() != null && !"".equals(errorResult.toString())) {
+                throw new RunProgramException(errorResult.toString());
+            }
             return result.toString();
         }catch (Exception e){
             e.printStackTrace();
-            return null;
+            throw new RunProgramException(e.getMessage());
         }
     }
 }

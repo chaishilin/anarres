@@ -26,6 +26,7 @@ public class ProgramController {
             ProgramResponseDto result = this.programService.doProgram(entity);
             return ResponseUtil.success(result);
         }catch (Exception e){
+            e.printStackTrace();
             return ResponseUtil.fail(e.getMessage());
         }
     }
