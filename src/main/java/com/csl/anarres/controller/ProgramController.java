@@ -2,6 +2,8 @@ package com.csl.anarres.controller;
 
 import com.csl.anarres.dto.ProgramResponseDto;
 import com.csl.anarres.entity.ProgramEntity;
+import com.csl.anarres.entity.UserEntity;
+import com.csl.anarres.service.LoginService;
 import com.csl.anarres.service.ProgramService;
 import com.csl.anarres.utils.ResponseTemplate;
 import com.csl.anarres.utils.ResponseUtil;
@@ -9,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author: Shilin Chai
@@ -19,11 +23,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProgramController {
     @Autowired
     ProgramService programService;
-
+    @Autowired
+    LoginService loginService;
     @PostMapping("/doRemoteProgram")
-    public ResponseTemplate doRemoteProgram(@RequestBody ProgramEntity entity){
+    public ResponseTemplate doRemoteProgram(@RequestBody ProgramEntity entity,HttpServletRequest request){
         try{
+            UserEntity user = loginService.getUserInfo(request);
+            entity.setCreaterId(user.getUserId());
             ProgramResponseDto result = this.programService.doProgram(entity);
+            System.out.println(result);
             return ResponseUtil.success(result);
         }catch (Exception e){
             e.printStackTrace();

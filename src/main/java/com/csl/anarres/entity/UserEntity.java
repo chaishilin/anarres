@@ -12,7 +12,7 @@ import java.util.Date;
 @TableName("user")
 public class UserEntity {
     @TableId(value = "ID",type = IdType.INPUT)
-    private int id;
+    private int userId;
     @TableField("USERNAME")
     private String username;
     @TableField("PASSWORD")

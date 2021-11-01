@@ -34,10 +34,10 @@ public class helloController {
     public ResponseTemplate login(@RequestBody UserEntity user){
         try {
             JSONObject result = new JSONObject();
-            userService.login(user);
+            user = userService.login(user);
             String token = userService.generateToken(user);
             Jedis jedis = RedisUtil.getInstance();
-            jedis.setex(token,(long)60*60,user.getUsername());
+            jedis.setex(token,(long)60*60,""+user.getUserId());
             result.put("token",token);
             return ResponseUtil.success("登陆成功",result);
         }catch (Exception e){

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.csl.anarres.mapper.ProgramMapper">
+
+    <sql id="programColumnAll">
+        PROGRAM_ID,LANGUAGE,CODE,CREATER_ID,CREATETIME,CODEMD5,OUTPUT
+    </sql>
+    <select id="findProgram" parameterType="com.csl.anarres.entity.ProgramEntity" resultType="com.csl.anarres.entity.ProgramEntity">
+        select
+        <include refid="programColumnAll"/>
+        from program
+        <where>
+            LANGUAGE = #{query.language}
+            and CODEMD5 = #{query.codeMD5};
+        </where>
+    </select>
+</mapper>

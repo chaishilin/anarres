@@ -22,15 +22,15 @@ import java.io.PrintWriter;
 public class AuthorizationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler){
-        String userName = "";
+        String userId = "";
         PrintWriter printWriter = null;
         String token  = request.getHeader("token");
         Jedis jedis = RedisUtil.getInstance();
         try {
             if(token != null){
-                userName = jedis.get(token);
+                userId = jedis.get(token);
             }
-            if(token == null || "".equals(token) || userName == null || "".equals(userName)){
+            if(token == null || "".equals(token) || userId == null || "".equals(userId)){
                 printWriter = response.getWriter();
                 ResponseTemplate responseMsg = ResponseUtil.fail(HttpStatus.UNAUTHORIZED.value(),"please login");
                 printWriter.println(JSONObject.toJSONString(responseMsg));
@@ -44,7 +44,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
                 printWriter.close();
             }
         }
-        request.setAttribute("user",userName);
+        request.setAttribute("user",userId);
         return true;
 
     }
