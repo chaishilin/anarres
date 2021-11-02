@@ -36,5 +36,7 @@ public class ProgramEntity {
     private String output;//程序的输出
     @TableField(exist = false)
     private boolean needSave;
+    @TableField(exist = false)
+    private boolean readable;
 
 }

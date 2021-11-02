@@ -18,13 +18,7 @@ public class CMDUtils {
         command = "cmd.exe /c " + command;
         try {
             process = Runtime.getRuntime().exec(command);
-            BufferedReader bufferedReader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream(),"GBK"));
-            String line = null;
-            while ((line = bufferedReader.readLine()) != null){
-                result.append(line+"\n");
-            }
-
+            //如果报错，获得其报错信息
             BufferedReader bufferedErrorReader = new BufferedReader(
                     new InputStreamReader(process.getErrorStream(),"GBK"));
             String errorLine = null;
@@ -34,6 +28,13 @@ public class CMDUtils {
 
             if(errorResult.toString() != null && !"".equals(errorResult.toString())) {
                 throw new RunProgramException(errorResult.toString());
+            }
+            //如果不报错，获得其输出
+            BufferedReader bufferedReader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream(),"GBK"));
+            String line = null;
+            while ((line = bufferedReader.readLine()) != null){
+                result.append(line+"\n");
             }
             return result.toString();
         }catch (Exception e){

@@ -1,6 +1,6 @@
 package com.csl.anarres;
 
-import com.csl.anarres.config.runProgramConfig;
+import com.csl.anarres.config.RunProgramConfig;
 import com.csl.anarres.service.UserService;
 import com.csl.anarres.utils.CMDUtils;
 import org.junit.jupiter.api.Test;
@@ -12,7 +12,7 @@ class AnarresApplicationTests {
     @Autowired
     private UserService userService;
     @Autowired
-    private runProgramConfig runProgramConfig;
+    private RunProgramConfig runProgramConfig;
     @Test
     void contextLoads() {
         String path = "D:\\java\\anarres\\target\\programs\\";

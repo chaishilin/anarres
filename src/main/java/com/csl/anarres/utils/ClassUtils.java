@@ -24,6 +24,6 @@ public class ClassUtils {
         return;
     }
     public static void genarateClassName(ProgramEntity entity){
-        entity.setClassName(entity.getLanguage() + new Date().getTime());
+        entity.setClassName("Solution");
     }
 }

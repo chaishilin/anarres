@@ -1,7 +1,8 @@
 package com.csl.anarres.service;
 
-import com.csl.anarres.dto.ProgramResponseDto;
 import com.csl.anarres.entity.ProgramEntity;
+
+import java.io.FileNotFoundException;
 
 /**
  * @author: Shilin Chai
@@ -14,14 +15,14 @@ public interface ProgramService {
      * @param entity
      * @return
      */
-    ProgramResponseDto doProgram(ProgramEntity entity);
+    void doProgram(ProgramEntity entity);
 
     /**
      * 负责将程序存入本地，供执行使用
      * @param entity
      * @return
      */
-    String saveProgramToLocal(ProgramEntity entity);
+    String saveProgramToLocal(ProgramEntity entity) throws FileNotFoundException;
 
     /**
      * 存入数据库，生成程序的md5签名，作者，程序内容

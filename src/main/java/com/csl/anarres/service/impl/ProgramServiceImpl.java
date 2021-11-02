@@ -1,8 +1,7 @@
 package com.csl.anarres.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.csl.anarres.config.runProgramConfig;
-import com.csl.anarres.dto.ProgramResponseDto;
+import com.csl.anarres.config.RunProgramConfig;
 import com.csl.anarres.entity.ProgramEntity;
 import com.csl.anarres.enums.SupportLanguage;
 import com.csl.anarres.exception.RunProgramException;
@@ -10,12 +9,11 @@ import com.csl.anarres.mapper.ProgramMapper;
 import com.csl.anarres.service.ProgramService;
 import com.csl.anarres.utils.CMDUtils;
 import com.csl.anarres.utils.ClassUtils;
+import com.csl.anarres.utils.FileUtil;
 import com.csl.anarres.utils.HashcodeBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 
@@ -27,32 +25,28 @@ import java.util.List;
 @Service
 public class ProgramServiceImpl implements ProgramService {
     @Autowired
-    runProgramConfig runProgramConfig;
+    RunProgramConfig runProgramConfig;
     @Autowired
     ProgramMapper mapper;
+    @Autowired
+    FileUtil fileUtil;
 
     @Override
-    public ProgramResponseDto doProgram(ProgramEntity entity) {
-        ProgramResponseDto responseDto = new ProgramResponseDto();
+    public void doProgram(ProgramEntity entity) {
         entity.setCodeMD5(HashcodeBuilder.getHashcode(entity.getCode()));
 
         saveProgramToLocal(entity);//临时将程序储存至本地
         runProgram(entity);//在本地运行程序，获得结果
-        deleteProgram(entity);//删除临时储存的程序
+        fileUtil.deleteProgramFromTargetPath();//删除临时储存的程序
         saveProgramToSql(entity);
-        responseDto.setResult(entity.getOutput());
-
-        return responseDto;
     }
 
-    public String saveProgramToLocal(ProgramEntity entity) {
+    public String saveProgramToLocal(ProgramEntity entity)  {
         if (!SupportLanguage.isInclude(entity.getLanguage())) {
             throw new RuntimeException("不支持的语言类型");
         }
-
-        String path = runProgramConfig.getPath();
         ClassUtils.genarateClassName(entity);
-        ClassUtils.changeClassContent(entity, entity.getClassName());
+        String path = runProgramConfig.getPath();
         switch (SupportLanguage.valueOf(entity.getLanguage())) {
             case java:
                 path += entity.getClassName() + "." + SupportLanguage.java.getName();
@@ -60,7 +54,11 @@ public class ProgramServiceImpl implements ProgramService {
         }
 
         try {
-            Files.write(Paths.get(path), entity.getCode().getBytes());
+            String relativePath = runProgramConfig.getRelativePath();
+            StringBuilder sStart = fileUtil.readFromClasspath(relativePath+"\\"+"SolutionStart.java");
+            StringBuilder sEnd = fileUtil.readFromClasspath(relativePath+"\\"+"SolutionEnd.java");
+            String codeToSave = sStart.append(entity.getCode()).append(sEnd).toString();
+            fileUtil.saveToPath(path,codeToSave);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -13,9 +13,9 @@ import org.springframework.context.annotation.Configuration;
 @Data
 @Configuration
 @ConfigurationProperties(prefix="run-program-config")
-public class runProgramConfig {
+public class RunProgramConfig {
     private String relativePath;
-
+    private int timeout;
     public String getPath() {
         ApplicationHome h = new ApplicationHome(getClass());
         String pathCurrent = h.getSource().getParent();
