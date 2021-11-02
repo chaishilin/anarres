@@ -4,6 +4,7 @@ import com.csl.anarres.exception.RunProgramException;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author: Shilin Chai
@@ -15,9 +16,16 @@ public class CMDUtils {
         StringBuilder result = new StringBuilder();
         StringBuilder errorResult = new StringBuilder();
         Process process = null;
-        command = "cmd.exe /c " + command;
+        //command = "cmd.exe /c " + command;
         try {
+
             process = Runtime.getRuntime().exec(command);
+            if(!process.waitFor(2000, TimeUnit.MILLISECONDS)){
+                process.destroy();
+                //实际上还是无法kill cmd生成的子进程，windows 环境下放弃杀死子进程了（反正也不拿windows当服务器）
+                //linux环境下，通过shell中调用 timeout 10 java Solution，来控制超时。
+                throw new RunProgramException("cmd:程序运行超时");
+            }
             //如果报错，获得其报错信息
             BufferedReader bufferedErrorReader = new BufferedReader(
                     new InputStreamReader(process.getErrorStream(),"GBK"));
