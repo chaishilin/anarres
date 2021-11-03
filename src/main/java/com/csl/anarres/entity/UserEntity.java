@@ -11,14 +11,20 @@ import java.util.Date;
 @Data
 @TableName("user")
 public class UserEntity {
-    @TableId(value = "ID",type = IdType.INPUT)
-    private int userId;
-    @TableField("USERNAME")
+    @TableId(value = "U_ID",type = IdType.INPUT)
+    private String userId;
+    @TableField("U_NAME")
     private String username;
-    @TableField("PASSWORD")
+    @TableField("U_PASSWORD")
     private String password;
-    @TableField("CREATETIME")
+    @TableField("CREATE_TIME")
     private Date createTime;
-    @TableField("LASTMODIFIEDTIME")
+    @TableField("LAST_MODIFIED_TIME")
     private Date lastModifiedTime;
+    @TableField("U_PHONE")
+    private String userPhone;
+    @TableField("U_EMAIL")
+    private String userEmail;
+    @TableField("U_STATE")
+    private String userState;
 }

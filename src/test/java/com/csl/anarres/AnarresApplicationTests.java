@@ -1,8 +1,9 @@
 package com.csl.anarres;
 
 import com.csl.anarres.config.RunProgramConfig;
+import com.csl.anarres.enums.TableIdEnum;
 import com.csl.anarres.service.UserService;
-import com.csl.anarres.utils.CMDUtils;
+import com.csl.anarres.utils.NumberGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,10 +16,11 @@ class AnarresApplicationTests {
     private RunProgramConfig runProgramConfig;
     @Test
     void contextLoads() {
-        String path = "D:\\java\\anarres\\target\\programs\\";
-        String name = "java1635692785033";
-        CMDUtils.execCMD("cd "+path+"&&"+"del "+name+".java");
-        CMDUtils.execCMD("cd "+path+"&&"+"del "+name+".class");
+        for(int i = 0;i < 10;i++){
+            String id = NumberGenerator.getIdFromTableId(TableIdEnum.LABEl);
+            System.out.println(id);
+        }
+
     }
 
 

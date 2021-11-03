@@ -16,18 +16,28 @@ import java.util.Date;
 @Data
 @TableName("program")
 public class ProgramEntity {
-    @TableId(value = "PROGRAM_ID",type = IdType.AUTO)
-    private int programId;
+    @TableId(value = "P_ID",type = IdType.INPUT)
+    private String programId;
     @TableField("LANGUAGE")
     private String language;
     @TableField("CODE")
     private String code;
     @TableField("CREATER_ID")
-    private int createrId;
-    @TableField("CREATETIME")
+    private String createrId;
+    @TableField("CREATE_TIME")
     private Date createtime;
-    @TableField("CODEMD5")
+    @TableField("LAST_MODIFIED_TIME")
+    private Date lastModifiedTime;
+    @TableField("CODE_MD5")
     private String codeMD5;
+    @TableField("TITLE")
+    private String title;
+    @TableField("CONTENT")
+    private String content;
+    @TableField("STATE")
+    private String state;
+    @TableField("PUBLIC_STATE")
+    private String publicState;
     @TableField(exist = false)
     private String className;
     @TableField(exist = false)

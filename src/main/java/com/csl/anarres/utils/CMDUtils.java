@@ -16,7 +16,7 @@ public class CMDUtils {
         StringBuilder result = new StringBuilder();
         StringBuilder errorResult = new StringBuilder();
         Process process = null;
-        //command = "cmd.exe /c " + command;
+        command = "cmd.exe /c " + command;
         try {
 
             process = Runtime.getRuntime().exec(command);

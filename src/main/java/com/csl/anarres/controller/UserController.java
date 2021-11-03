@@ -16,7 +16,7 @@ import redis.clients.jedis.Jedis;
 import java.util.List;
 
 @RestController
-public class helloController {
+public class UserController {
     @Autowired
     private UserService userService;
 
@@ -39,6 +39,7 @@ public class helloController {
             Jedis jedis = RedisUtil.getInstance();
             jedis.setex(token,(long)60*60,""+user.getUserId());
             result.put("token",token);
+            result.put("userId",user.getUserId());
             return ResponseUtil.success("登陆成功",result);
         }catch (Exception e){
             return ResponseUtil.fail(e.getMessage());
@@ -47,8 +48,8 @@ public class helloController {
     @PostMapping("/register")
     public ResponseTemplate register(@RequestBody UserEntity user){
         try {
-            UserEntity entity = userService.register(user);
-            return ResponseUtil.success(entity);
+            userService.register(user);
+            return ResponseUtil.success("注册成功");
         }catch (Exception e){
             return ResponseUtil.fail(e.getMessage());
         }

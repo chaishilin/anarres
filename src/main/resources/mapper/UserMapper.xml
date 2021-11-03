@@ -2,13 +2,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.csl.anarres.mapper.UserMapper">
-
+    <resultMap id="userMap" type="com.csl.anarres.entity.UserEntity">
+        <id column="U_ID" property="userId"></id>
+        <id column="U_NAME" property="username"></id>
+        <id column="U_PASSWORD" property="password"></id>
+        <id column="CREATE_TIME" property="createTime"></id>
+        <id column="LAST_MODIFIED_TIME" property="lastModifiedTime"></id>
+        <id column="U_PHONE" property="userPhone"></id>
+        <id column="U_EMAIL" property="userEmail"></id>
+        <id column="U_STATE" property="userState"></id>
+    </resultMap>
     <sql id="userColumnAll">
-        ID,USERNAME,CREATETIME,LASTMODIFIEDTIME
+        U_ID,U_NAME,U_PHONE,U_EMAIL,U_STATE
     </sql>
-    <select id="userInfoList" resultType="com.csl.anarres.entity.UserEntity">
+    <select id="userInfoList" resultMap="userMap">
         select
-        <include refid="userColumnAll"/>
+        <!--<include refid="userColumnAll"/>-->
+        *
         from user;
     </select>
 </mapper>

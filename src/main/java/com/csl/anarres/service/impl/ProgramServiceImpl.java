@@ -4,13 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.csl.anarres.config.RunProgramConfig;
 import com.csl.anarres.entity.ProgramEntity;
 import com.csl.anarres.enums.SupportLanguage;
-import com.csl.anarres.exception.RunProgramException;
+import com.csl.anarres.enums.TableIdEnum;
 import com.csl.anarres.mapper.ProgramMapper;
 import com.csl.anarres.service.ProgramService;
 import com.csl.anarres.utils.CMDUtils;
 import com.csl.anarres.utils.ClassUtils;
 import com.csl.anarres.utils.FileUtil;
 import com.csl.anarres.utils.HashcodeBuilder;
+import com.csl.anarres.utils.NumberGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -77,23 +78,22 @@ public class ProgramServiceImpl implements ProgramService {
         }
     }
 
-    public void deleteProgram(ProgramEntity entity) {
-        String path = runProgramConfig.getPath();
-        try {
-            CMDUtils.execCMD("cd " + path + "&&" + "del " + entity.getClassName() + ".java");
-            CMDUtils.execCMD("cd " + path + "&&" + "del " + entity.getClassName() + ".class");
-        } catch (RunProgramException e) {
-            //删除失败说明并没有该文件，因此不做处理
-        }
-    }
-
     public void saveProgramToSql(ProgramEntity entity) {
         entity.setCreatetime(new Date());
         QueryWrapper<ProgramEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("CODEMD5", entity.getCodeMD5());
+        queryWrapper.eq("CODE_MD5", entity.getCodeMD5());
         queryWrapper.eq("CREATER_ID", entity.getCreaterId());
         List<ProgramEntity> programEntityList = mapper.selectList(queryWrapper);
         if (programEntityList.size() == 0) {
+            entity.setCreatetime(new Date());
+            entity.setLastModifiedTime(new Date());
+            entity.setProgramId(NumberGenerator.getIdFromTableId(TableIdEnum.PROGRAM));
+            if(entity.getState() == null || "".equals(entity.getState())){
+                entity.setState("01");
+            }
+            if(entity.getPublicState() == null || "".equals(entity.getPublicState())){
+                entity.setPublicState("01");
+            }
             mapper.insert(entity);
         }
     }

@@ -3,10 +3,23 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.csl.anarres.mapper.ProgramMapper">
 
+    <resultMap id="programMap" type="com.csl.anarres.entity.ProgramEntity">
+        <id column="P_ID" property="programId"></id>
+        <id column="LANGUAGE" property="language"></id>
+        <id column="CODE" property="code"></id>
+        <id column="CREATE_TIME" property="createTime"></id>
+        <id column="LAST_MODIFIED_TIME" property="lastModifiedTime"></id>
+        <id column="CREATER_ID" property="createrId"></id>
+        <id column="CODE_MD5" property="codeMD5"></id>
+        <id column="TITLE" property="title"></id>
+        <id column="CONTENT" property="content"></id>
+        <id column="STATE" property="state"></id>
+        <id column="PUBLIC_STATE" property="publicState"></id>
+    </resultMap>
     <sql id="programColumnAll">
-        PROGRAM_ID,LANGUAGE,CODE,CREATER_ID,CREATETIME,CODEMD5,OUTPUT
+        P_ID,LANGUAGE,CODE,CREATER_ID,CREATE_TIME,CODE_MD5,OUTPUT
     </sql>
-    <select id="findProgram" parameterType="com.csl.anarres.entity.ProgramEntity" resultType="com.csl.anarres.entity.ProgramEntity">
+    <select id="findProgram"  resultMap="programMap">
         select
         <include refid="programColumnAll"/>
         from program
