@@ -30,6 +30,8 @@ public class ProgramEntity {
     private Date lastModifiedTime;
     @TableField("CODE_MD5")
     private String codeMD5;
+    @TableField("CONTENT_MD5")
+    private String contentMD5;
     @TableField("TITLE")
     private String title;
     @TableField("CONTENT")

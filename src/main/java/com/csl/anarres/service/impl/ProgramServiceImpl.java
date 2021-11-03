@@ -34,12 +34,9 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public void doProgram(ProgramEntity entity) {
-        entity.setCodeMD5(HashcodeBuilder.getHashcode(entity.getCode()));
-
         saveProgramToLocal(entity);//临时将程序储存至本地
         runProgram(entity);//在本地运行程序，获得结果
         fileUtil.deleteProgramFromTargetPath();//删除临时储存的程序
-        saveProgramToSql(entity);
     }
 
     public String saveProgramToLocal(ProgramEntity entity)  {
@@ -78,10 +75,14 @@ public class ProgramServiceImpl implements ProgramService {
         }
     }
 
-    public void saveProgramToSql(ProgramEntity entity) {
+    public String saveProgramToSql(ProgramEntity entity) {
+        entity.setCodeMD5(HashcodeBuilder.getHashcode(entity.getCode()));
+        entity.setContentMD5(HashcodeBuilder.getHashcode(entity.getContent()));
         entity.setCreatetime(new Date());
         QueryWrapper<ProgramEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("CODE_MD5", entity.getCodeMD5());
+        queryWrapper.eq("TITLE", entity.getTitle());
+        queryWrapper.eq("CONTENT_MD5", entity.getContentMD5());
         queryWrapper.eq("CREATER_ID", entity.getCreaterId());
         List<ProgramEntity> programEntityList = mapper.selectList(queryWrapper);
         if (programEntityList.size() == 0) {
@@ -95,6 +96,11 @@ public class ProgramServiceImpl implements ProgramService {
                 entity.setPublicState("01");
             }
             mapper.insert(entity);
+            return entity.getProgramId();
+        }else if(programEntityList.size() == 1){
+            return programEntityList.get(0).getProgramId();
+        }else{
+            throw new RuntimeException("查到多条重复记录");
         }
     }
 

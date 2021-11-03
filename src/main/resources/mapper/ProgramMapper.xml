@@ -11,6 +11,7 @@
         <id column="LAST_MODIFIED_TIME" property="lastModifiedTime"></id>
         <id column="CREATER_ID" property="createrId"></id>
         <id column="CODE_MD5" property="codeMD5"></id>
+        <id column="CONTENT_MD5" property="contentMD5"></id>
         <id column="TITLE" property="title"></id>
         <id column="CONTENT" property="content"></id>
         <id column="STATE" property="state"></id>

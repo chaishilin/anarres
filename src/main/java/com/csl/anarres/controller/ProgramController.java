@@ -29,6 +29,19 @@ public class ProgramController {
     RunProgramConfig runProgramConfig;
     @Autowired
     LoginService loginService;
+
+    @PostMapping("/saveProgram")
+    public ResponseTemplate saveProgram(@RequestBody ProgramEntity entity,HttpServletRequest request) {
+        try {
+            UserEntity user = loginService.getUserInfo(request);
+            entity.setCreaterId(user.getUserId());
+            String id = programService.saveProgramToSql(entity);
+            return ResponseUtil.success(id);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseUtil.fail("程序保存失败"+e.getMessage());
+        }
+    }
     @PostMapping("/doRemoteProgram")
     public ResponseTemplate doRemoteProgram(@RequestBody ProgramEntity entity,HttpServletRequest request){
         try{

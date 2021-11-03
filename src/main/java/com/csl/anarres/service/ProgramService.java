@@ -29,6 +29,6 @@ public interface ProgramService {
      * @param entity
      * @return
      */
-    void saveProgramToSql(ProgramEntity entity);
+    String saveProgramToSql(ProgramEntity entity);
 
 }
