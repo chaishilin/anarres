@@ -3,6 +3,7 @@ package com.csl.anarres.service;
 import com.csl.anarres.entity.ProgramEntity;
 
 import java.io.FileNotFoundException;
+import java.util.List;
 
 /**
  * @author: Shilin Chai
@@ -10,6 +11,8 @@ import java.io.FileNotFoundException;
  * @Description:远程运行程序
  */
 public interface ProgramService {
+
+    List<ProgramEntity> programList(ProgramEntity entity);
     /**
      * 运行程序，返回结果，可以考虑采用模板方法来制作，doProgram为实际方法
      * @param entity

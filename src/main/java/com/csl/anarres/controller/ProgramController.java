@@ -1,7 +1,7 @@
 package com.csl.anarres.controller;
 
 import com.csl.anarres.config.RunProgramConfig;
-import com.csl.anarres.dto.ProgramResponseDto;
+import com.csl.anarres.dto.ProgramDto;
 import com.csl.anarres.entity.ProgramEntity;
 import com.csl.anarres.entity.UserEntity;
 import com.csl.anarres.service.LoginService;
@@ -12,9 +12,11 @@ import com.csl.anarres.utils.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author: Shilin Chai
@@ -29,7 +31,16 @@ public class ProgramController {
     RunProgramConfig runProgramConfig;
     @Autowired
     LoginService loginService;
-
+    @RequestMapping("/programList")
+    public ResponseTemplate programList(@RequestBody ProgramEntity entity,HttpServletRequest request) {
+        try {
+            List<ProgramEntity> result = programService.programList(entity);
+            return ResponseUtil.success(result);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseUtil.fail("程序保存失败"+e.getMessage());
+        }
+    }
     @PostMapping("/saveProgram")
     public ResponseTemplate saveProgram(@RequestBody ProgramEntity entity,HttpServletRequest request) {
         try {
@@ -57,7 +68,7 @@ public class ProgramController {
                     break;
                 }
             }
-            ProgramResponseDto result = new ProgramResponseDto();
+            ProgramDto result = new ProgramDto();
             if(entity.isReadable()){
                 result.setResult(entity.getOutput());
             }else{

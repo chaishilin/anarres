@@ -31,7 +31,10 @@ public class ProgramServiceImpl implements ProgramService {
     ProgramMapper mapper;
     @Autowired
     FileUtil fileUtil;
-
+    @Override
+    public List<ProgramEntity> programList(ProgramEntity entity){
+        return mapper.findProgramList(entity);
+    }
     @Override
     public void doProgram(ProgramEntity entity) {
         saveProgramToLocal(entity);//临时将程序储存至本地
@@ -78,7 +81,7 @@ public class ProgramServiceImpl implements ProgramService {
     public String saveProgramToSql(ProgramEntity entity) {
         entity.setCodeMD5(HashcodeBuilder.getHashcode(entity.getCode()));
         entity.setContentMD5(HashcodeBuilder.getHashcode(entity.getContent()));
-        entity.setCreatetime(new Date());
+        entity.setCreateTime(new Date());
         QueryWrapper<ProgramEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("CODE_MD5", entity.getCodeMD5());
         queryWrapper.eq("TITLE", entity.getTitle());
@@ -86,7 +89,7 @@ public class ProgramServiceImpl implements ProgramService {
         queryWrapper.eq("CREATER_ID", entity.getCreaterId());
         List<ProgramEntity> programEntityList = mapper.selectList(queryWrapper);
         if (programEntityList.size() == 0) {
-            entity.setCreatetime(new Date());
+            entity.setCreateTime(new Date());
             entity.setLastModifiedTime(new Date());
             entity.setProgramId(NumberGenerator.getIdFromTableId(TableIdEnum.PROGRAM));
             if(entity.getState() == null || "".equals(entity.getState())){

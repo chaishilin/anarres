@@ -5,28 +5,53 @@
 
     <resultMap id="programMap" type="com.csl.anarres.entity.ProgramEntity">
         <id column="P_ID" property="programId"></id>
-        <id column="LANGUAGE" property="language"></id>
-        <id column="CODE" property="code"></id>
-        <id column="CREATE_TIME" property="createTime"></id>
-        <id column="LAST_MODIFIED_TIME" property="lastModifiedTime"></id>
-        <id column="CREATER_ID" property="createrId"></id>
-        <id column="CODE_MD5" property="codeMD5"></id>
-        <id column="CONTENT_MD5" property="contentMD5"></id>
-        <id column="TITLE" property="title"></id>
-        <id column="CONTENT" property="content"></id>
-        <id column="STATE" property="state"></id>
-        <id column="PUBLIC_STATE" property="publicState"></id>
+        <result  column="P_LANGUAGE" property="language"></result >
+        <result  column="P_CODE" property="code"></result >
+        <result  column="P_CREATE_TIME" property="createTime"></result >
+        <result  column="P_LAST_MODIFIED_TIME" property="lastModifiedTime"></result >
+        <result  column="P_CREATER_ID " property="createrId"></result >
+        <result  column="P_CODE_MD5" property="codeMD5"></result >
+        <result  column="P_CONTENT_MD5" property="contentMD5"></result >
+        <result  column="P_TITLE" property="title"></result >
+        <result  column="P_CONTENT" property="content"></result >
+        <result  column="P_STATE" property="state"></result >
+        <result  column="P_PUBLIC_STATE" property="publicState"></result >
     </resultMap>
+
+    <resultMap id="programDtoMap" type="com.csl.anarres.dto.ProgramDto" extends="programMap">
+        <result column="U_NAME" property="createrName"></result>
+
+    </resultMap>
+
+
     <sql id="programColumnAll">
-        P_ID,LANGUAGE,CODE,CREATER_ID,CREATE_TIME,CODE_MD5,OUTPUT
+        p.P_ID as P_ID,
+        p.LANGUAGE as P_LANGUAGE,
+        p.CODE as P_CODE,
+        p.CREATER_ID as P_CREATER_ID,
+        p.CREATE_TIME as P_CREATE_TIME,
+        p.CODE_MD5 as P_CODE_MD5,
+        p.TITLE as P_TITLE,
+        p.CONTENT as P_CONTENT,
+        p.LAST_MODIFIED_TIME as P_LAST_MODIFIED_TIME,
     </sql>
-    <select id="findProgram"  resultMap="programMap">
+    <select id="findProgramList" resultMap="programDtoMap">
         select
         <include refid="programColumnAll"/>
-        from program
+        u.U_NAME as U_NAME
+        from program p
+        left join user u on p.CREATER_ID = u.U_ID
         <where>
-            LANGUAGE = #{query.language}
-            and CODEMD5 = #{query.codeMD5};
+            CREATER_ID = #{query.createrId}
+            <if test="query.programId != null and query.programId != ''">
+                P_ID = #{query.programId}
+            </if>
+            <if test="query.language != null and query.language != ''">
+                LANGUAGE = #{query.language}
+            </if>
+            <if test="query.codeMD5 != null and query.codeMD5 != ''">
+                CODEMD5 = #{query.codeMD5}
+            </if>
         </where>
     </select>
 </mapper>

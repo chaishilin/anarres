@@ -12,5 +12,6 @@ import java.util.List;
  * @Description:
  */
 public interface ProgramMapper extends BaseMapper<ProgramEntity> {
-    List<ProgramEntity> findProgram(@Param("query") ProgramEntity entity);
+    List<ProgramEntity> findProgramList(@Param("query") ProgramEntity entity);//todo 目前只能根据个人id查自己的程序，以后做成分权限管理的，起码做成公共的和私人的
+
 }

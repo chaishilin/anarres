@@ -25,7 +25,7 @@ public class ProgramEntity {
     @TableField("CREATER_ID")
     private String createrId;
     @TableField("CREATE_TIME")
-    private Date createtime;
+    private Date createTime;
     @TableField("LAST_MODIFIED_TIME")
     private Date lastModifiedTime;
     @TableField("CODE_MD5")
