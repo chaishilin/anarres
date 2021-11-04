@@ -42,15 +42,15 @@
         from program p
         left join user u on p.CREATER_ID = u.U_ID
         <where>
-            CREATER_ID = #{query.createrId}
+            and p.CREATER_ID = #{query.createrId}
             <if test="query.programId != null and query.programId != ''">
-                P_ID = #{query.programId}
+               and p.P_ID = #{query.programId}
             </if>
             <if test="query.language != null and query.language != ''">
-                LANGUAGE = #{query.language}
+                and p.LANGUAGE = #{query.language}
             </if>
             <if test="query.codeMD5 != null and query.codeMD5 != ''">
-                CODEMD5 = #{query.codeMD5}
+                and p.CODEMD5 = #{query.codeMD5}
             </if>
         </where>
     </select>
