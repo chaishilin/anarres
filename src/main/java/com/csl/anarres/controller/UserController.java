@@ -10,9 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import redis.clients.jedis.Jedis;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -40,7 +42,20 @@ public class UserController {
             jedis.setex(token,(long)60*60,""+user.getUserId());
             result.put("token",token);
             result.put("userId",user.getUserId());
+            result.put("username",user.getUsername());
             return ResponseUtil.success("登陆成功",result);
+        }catch (Exception e){
+            return ResponseUtil.fail(e.getMessage());
+        }
+    }
+
+    @RequestMapping("/logout")
+    public ResponseTemplate logout(HttpServletRequest request){
+        try {
+            String token  = request.getHeader("token");
+            Jedis jedis = RedisUtil.getInstance();
+            jedis.del(token);//退出登录就是在后端删除这个token
+            return ResponseUtil.success("","退出登录成功");
         }catch (Exception e){
             return ResponseUtil.fail(e.getMessage());
         }
