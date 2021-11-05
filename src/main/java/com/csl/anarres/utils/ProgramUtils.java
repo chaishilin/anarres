@@ -20,39 +20,46 @@ public class ProgramUtils {
 
     public String programWrapper(ProgramEntity entity){
         String relativePath = runProgramConfig.getRelativePath();
-        StringBuilder sStart = null;
-        StringBuilder sEnd = null;
         String codeToSave = null;
+        String defName = null;
+        String code = entity.getCode();
         switch (SupportLanguage.valueOf(entity.getLanguage())) {
             case java:
-                sStart = fileUtil.readFromClasspath(relativePath + "\\" + "SolutionStart.java");
-                sEnd = fileUtil.readFromClasspath(relativePath + "\\" + "SolutionEnd.java");
-                codeToSave = sStart.append(entity.getCode()).append(sEnd).toString();
+                StringBuilder sStart = fileUtil.readFromClasspath(relativePath + "\\" + "SolutionStart.java");
+                StringBuilder sEnd = fileUtil.readFromClasspath(relativePath + "\\" + "SolutionEnd.java");
+                codeToSave = sStart.append(code).append(sEnd).toString();
+                break;
+            case golang:
+                defName = code.split("\\(")[0].replace("func ","");
+                StringBuilder goTemplate = fileUtil.readFromClasspath(relativePath + "\\" + "Solution.go");
+                goTemplate.append(code);
+                String goTemplateString = goTemplate.toString();
+                goTemplateString = goTemplateString.replace("inputYourFunction",defName);
+                StringBuilder inputStaff = new StringBuilder();
+                inputStaff.append("fmt.Println(\"Call Function : "+defName+"\")\n");
+                inputStaff.append("fmt.Println(\"--------\")\n");
+                goTemplateString = goTemplateString.replace("inputStaff",inputStaff.toString());
+                StringBuilder outputStaff = new StringBuilder();
+                outputStaff.append("fmt.Println(\"--------\")\n");
+                outputStaff.append("fmt.Println(\"output:\")\n");
+                goTemplateString = goTemplateString.replace("outputStaff",outputStaff.toString());
+                codeToSave = goTemplateString;
                 break;
             case python:
-                String code = entity.getCode();
-                String defName = code.split("\\(")[0].replace("def ","");
+                StringBuilder pythonTemplate = new StringBuilder();
+                pythonTemplate.append(code);
+                pythonTemplate.append("\n");
+                pythonTemplate.append(fileUtil.readFromClasspath(relativePath + "\\" + "Solution.py"));
+                defName = code.split("\\(")[0].replace("def ","");
                 StringBuilder runDefStr = new StringBuilder();
-                runDefStr.append("print(\"Call Funtion : "+ defName + "\")");
-                runDefStr.append("\n");
-                runDefStr.append("print(\"--------\")");
-                runDefStr.append("\n");
                 //组成调用函数的那一行
-                runDefStr.append("result = ");
                 runDefStr.append(defName);
                 runDefStr.append("(");
                 runDefStr.append(entity.getInput().replace(" ",","));
                 runDefStr.append(")");
                 runDefStr.append("\n");
-                //输出output
-                runDefStr.append("print(\"--------\")");
-                runDefStr.append("\n");
-                runDefStr.append("print(\"output:\")");
-                runDefStr.append("\n");
-                runDefStr.append("print(result)");
-                runDefStr.append("\n");
 
-                codeToSave = entity.getCode() + "\n"+runDefStr.toString();
+                codeToSave = pythonTemplate.toString().replace("inputYourFunction",runDefStr.toString());
                 break;
         }
         return codeToSave;

@@ -7,7 +7,8 @@ package com.csl.anarres.enums;
  */
 public enum SupportLanguage {
     java("java",".java",1),
-    python("python",".py",2);
+    python("python",".py",2),
+    golang("golang",".go",3);
     private String name;
     private String suffix;
     private int code;

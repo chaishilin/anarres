@@ -73,8 +73,11 @@ public class ProgramServiceImpl implements ProgramService {
                     CMDUtils.execCMD("cd " + path + "&&" + "javac " +fileName);
                     result = CMDUtils.execCMD("cd " + path + "&&" + "java " + entity.getClassName() + "  " + entity.getInput());
                     break;
+                case golang:
+                    result = CMDUtils.execCMD("cd " + path + "&&" + "go run " + fileName + " " + entity.getInput());
+                    break;
                 case python:
-                    result = CMDUtils.execCMD("cd " + path + "&&" + "python " + fileName);
+                    result = CMDUtils.execCMD("cd " + path + "&&" + "python " + fileName );
                     break;
             }
             entity.setOutput(result);
