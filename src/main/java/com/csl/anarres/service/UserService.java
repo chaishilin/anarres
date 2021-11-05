@@ -26,4 +26,11 @@ public interface UserService {
      */
     String generateToken(UserEntity user);
     List<UserEntity> userInfoList();
+
+    /**
+     * 忘记密码后重设密码
+     * @param user
+     * @return
+     */
+    UserEntity resetPassword(UserEntity user);
 }

@@ -69,4 +69,14 @@ public class UserController {
             return ResponseUtil.fail(e.getMessage());
         }
     }
+    @PostMapping("/resetPassword")
+    public ResponseTemplate resetPassword(@RequestBody UserEntity user){
+        try {
+            userService.resetPassword(user);
+            return ResponseUtil.success("密码修改成功");
+        }catch (Exception e){
+            return ResponseUtil.fail(e.getMessage());
+        }
+    }
+
 }

@@ -76,4 +76,24 @@ public class UserServiceImpl implements UserService {
 
         //return userMapper.userInfoList();
     };
+
+    @Override
+    public UserEntity resetPassword(UserEntity entity){
+        //用户名和邮箱对就行
+        QueryWrapper<UserEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("U_NAME",entity.getUsername());
+        queryWrapper.eq("U_EMAIL",entity.getUserEmail());
+        List<UserEntity> userEntityList = userMapper.selectList(queryWrapper);
+        if(userEntityList.size() == 0){
+            throw new RuntimeException("无该用户");
+        }else if(userEntityList.size() > 1){
+            throw  new RuntimeException("用户重复");
+        }else{
+            UserEntity newEntity = userEntityList.get(0);
+            newEntity.setPassword(HashcodeBuilder.getHashcode(entity.getPassword()));
+            userMapper.updateById(newEntity);
+            return newEntity;
+        }
+
+    }
 }
