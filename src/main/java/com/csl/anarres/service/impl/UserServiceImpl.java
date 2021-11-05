@@ -85,7 +85,7 @@ public class UserServiceImpl implements UserService {
         queryWrapper.eq("U_EMAIL",entity.getUserEmail());
         List<UserEntity> userEntityList = userMapper.selectList(queryWrapper);
         if(userEntityList.size() == 0){
-            throw new RuntimeException("无该用户");
+            throw new RuntimeException("无该用户或用户名与邮箱不匹配");
         }else if(userEntityList.size() > 1){
             throw  new RuntimeException("用户重复");
         }else{

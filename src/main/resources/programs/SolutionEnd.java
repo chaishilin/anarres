@@ -15,7 +15,7 @@ class Parser {
                 yourMethod = m;//获得不是main的public函数
             }
         }
-        System.out.println("Call Funtion : "+yourMethod.getName());
+        System.out.println("Call Function : "+yourMethod.getName());
         System.out.println("--------");
         Class[] inputClasses = yourMethod.getParameterTypes();
         Type[] inputTypes = yourMethod.getGenericParameterTypes();

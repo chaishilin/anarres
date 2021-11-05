@@ -8,7 +8,7 @@ import com.csl.anarres.enums.TableIdEnum;
 import com.csl.anarres.mapper.ProgramMapper;
 import com.csl.anarres.service.ProgramService;
 import com.csl.anarres.utils.CMDUtils;
-import com.csl.anarres.utils.ClassUtils;
+import com.csl.anarres.utils.ProgramUtils;
 import com.csl.anarres.utils.FileUtil;
 import com.csl.anarres.utils.HashcodeBuilder;
 import com.csl.anarres.utils.NumberGenerator;
@@ -31,35 +31,31 @@ public class ProgramServiceImpl implements ProgramService {
     ProgramMapper mapper;
     @Autowired
     FileUtil fileUtil;
+    @Autowired
+    ProgramUtils programUtils;
+
     @Override
-    public List<ProgramEntity> programList(ProgramEntity entity){
+    public List<ProgramEntity> programList(ProgramEntity entity) {
         return mapper.findProgramList(entity);
     }
+
     @Override
     public void doProgram(ProgramEntity entity) {
         saveProgramToLocal(entity);//临时将程序储存至本地
         runProgram(entity);//在本地运行程序，获得结果
-        fileUtil.deleteProgramFromTargetPath();//删除临时储存的程序
+        //fileUtil.deleteProgramFromTargetPath();//删除临时储存的程序
     }
 
-    public String saveProgramToLocal(ProgramEntity entity)  {
+    public String saveProgramToLocal(ProgramEntity entity) {
         if (!SupportLanguage.isInclude(entity.getLanguage())) {
             throw new RuntimeException("不支持的语言类型");
         }
-        ClassUtils.genarateClassName(entity);
+        programUtils.genarateClassName(entity);
         String path = runProgramConfig.getPath();
-        switch (SupportLanguage.valueOf(entity.getLanguage())) {
-            case java:
-                path += entity.getClassName() + "." + SupportLanguage.java.getName();
-                break;
-        }
-
+        path += entity.getClassName() + SupportLanguage.valueOf(entity.getLanguage()).getSuffix();
         try {
-            String relativePath = runProgramConfig.getRelativePath();
-            StringBuilder sStart = fileUtil.readFromClasspath(relativePath+"\\"+"SolutionStart.java");
-            StringBuilder sEnd = fileUtil.readFromClasspath(relativePath+"\\"+"SolutionEnd.java");
-            String codeToSave = sStart.append(entity.getCode()).append(sEnd).toString();
-            fileUtil.saveToPath(path,codeToSave);
+            String codeToSave = programUtils.programWrapper(entity);
+            fileUtil.saveToPath(path, codeToSave);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -70,12 +66,28 @@ public class ProgramServiceImpl implements ProgramService {
     public void runProgram(ProgramEntity entity) {
         String path = runProgramConfig.getPath();
         try {
-            CMDUtils.execCMD("cd " + path + "&&" + "javac " + entity.getClassName() + ".java");
-            String result = CMDUtils.execCMD("cd " + path + "&&" + "java " + entity.getClassName() + "  " + entity.getInput());
+            String result = null;
+            String fileName = entity.getClassName()+ SupportLanguage.valueOf(entity.getLanguage()).getSuffix();
+            switch (SupportLanguage.valueOf(entity.getLanguage())) {
+                case java:
+                    CMDUtils.execCMD("cd " + path + "&&" + "javac " +fileName);
+                    result = CMDUtils.execCMD("cd " + path + "&&" + "java " + entity.getClassName() + "  " + entity.getInput());
+                    break;
+                case python:
+                    result = CMDUtils.execCMD("cd " + path + "&&" + "python " + fileName);
+                    break;
+            }
             entity.setOutput(result);
         } catch (Exception e) {
             entity.setOutput(e.getMessage());
         }
+    }
+
+    @Override
+    public void deleteProgram(String programId) {
+        ProgramEntity entity = mapper.selectById(programId);
+        entity.setState("00");
+        mapper.updateById(entity);
     }
 
     public String saveProgramToSql(ProgramEntity entity) {
@@ -92,17 +104,20 @@ public class ProgramServiceImpl implements ProgramService {
             entity.setCreateTime(new Date());
             entity.setLastModifiedTime(new Date());
             entity.setProgramId(NumberGenerator.getIdFromTableId(TableIdEnum.PROGRAM));
-            if(entity.getState() == null || "".equals(entity.getState())){
+            if (entity.getState() == null || "".equals(entity.getState())) {
                 entity.setState("01");
             }
-            if(entity.getPublicState() == null || "".equals(entity.getPublicState())){
+            if (entity.getPublicState() == null || "".equals(entity.getPublicState())) {
                 entity.setPublicState("01");
             }
             mapper.insert(entity);
             return entity.getProgramId();
-        }else if(programEntityList.size() == 1){
+        } else if (programEntityList.size() == 1) {
+            ProgramEntity programEntity = programEntityList.get(0);
+            programEntity.setState("01");
+            mapper.updateById(programEntity);
             return programEntityList.get(0).getProgramId();
-        }else{
+        } else {
             throw new RuntimeException("查到多条重复记录");
         }
     }

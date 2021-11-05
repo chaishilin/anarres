@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: Shilin Chai
@@ -51,6 +52,17 @@ public class ProgramController {
         }catch (Exception e){
             e.printStackTrace();
             return ResponseUtil.fail("程序保存失败"+e.getMessage());
+        }
+    }
+    @PostMapping("/deleteProgram")
+    public ResponseTemplate deleteProgram(@RequestBody Map<String,String> map, HttpServletRequest request) {
+        try {
+            String programId = map.get("programId");
+            programService.deleteProgram(programId);
+            return ResponseUtil.success(programId);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseUtil.fail("程序删除失败"+e.getMessage());
         }
     }
     @PostMapping("/doRemoteProgram")

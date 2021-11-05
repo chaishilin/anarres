@@ -43,6 +43,7 @@
         left join user u on p.CREATER_ID = u.U_ID
         <where>
             and p.CREATER_ID = #{query.createrId}
+            and p.STATE != "00"
             <if test="query.programId != null and query.programId != ''">
                and p.P_ID = #{query.programId}
             </if>

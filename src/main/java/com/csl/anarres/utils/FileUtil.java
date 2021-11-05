@@ -45,6 +45,7 @@ public class FileUtil {
         return result;
     }
     public void deleteProgramFromTargetPath(){
+        //todo 该方法在不同操作系统下需要通过switch case等方法进行修改
         String path = runProgramConfig.getPath();
         File dir = new File(path);
         File[] files = dir.listFiles();

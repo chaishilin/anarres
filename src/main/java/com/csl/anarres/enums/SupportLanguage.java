@@ -6,11 +6,16 @@ package com.csl.anarres.enums;
  * @Description:
  */
 public enum SupportLanguage {
-    java("java",1);
+    java("java",".java",1),
+    python("python",".py",2);
     private String name;
+    private String suffix;
     private int code;
     public String getName() {
         return name;
+    }
+    public String getSuffix() {
+        return suffix;
     }
 
     public int getCode() {
@@ -18,8 +23,9 @@ public enum SupportLanguage {
     }
 
 
-    private SupportLanguage(String name,int code){
+    private SupportLanguage(String name,String suffix,int code){
         this.code = code;
+        this.suffix = suffix;
         this.name = name;
     }
 

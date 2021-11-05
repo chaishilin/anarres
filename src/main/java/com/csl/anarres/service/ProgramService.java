@@ -34,4 +34,11 @@ public interface ProgramService {
      */
     String saveProgramToSql(ProgramEntity entity);
 
+    /**
+     * 通过设置state为00来实现软删除
+     * @param programId
+     * @return
+     */
+    void deleteProgram(String programId);
+
 }
