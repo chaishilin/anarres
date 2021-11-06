@@ -20,7 +20,7 @@ public class CMDUtils {
         try {
 
             process = Runtime.getRuntime().exec(command);
-            if(!process.waitFor(2000, TimeUnit.MILLISECONDS)){
+            if(!process.waitFor(10000, TimeUnit.MILLISECONDS)){
                 process.destroy();
                 //实际上还是无法kill cmd生成的子进程，windows 环境下放弃杀死子进程了（反正也不拿windows当服务器）
                 //linux环境下，通过shell中调用 timeout 10 java Solution，来控制超时。

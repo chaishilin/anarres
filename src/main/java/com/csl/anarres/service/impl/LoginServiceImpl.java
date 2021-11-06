@@ -18,10 +18,10 @@ import javax.servlet.http.HttpServletRequest;
 @Service
 public class LoginServiceImpl implements LoginService {
     @Autowired
-    UserMapper userMapper;
+    private UserMapper userMapper;
     @Override
-    public UserEntity getUserInfo(HttpServletRequest request){
-        String token  = request.getHeader("token");
+    public UserEntity getUserInfo(HttpServletRequest request) {
+        String token = request.getHeader("token");
         Jedis jedis = RedisUtil.getInstance();
         String userId = jedis.get(token);
         return userMapper.selectById(userId);

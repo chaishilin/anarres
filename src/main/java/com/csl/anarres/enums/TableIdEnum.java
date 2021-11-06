@@ -9,7 +9,9 @@ package com.csl.anarres.enums;
 public enum TableIdEnum {
     USER("user","01"),
     PROGRAM("program","02"),
-    LABEl("label","03");
+    PROGRAMCODE("programCode","03"),
+    LABEl("label","04");
+
 
     private String name;
 

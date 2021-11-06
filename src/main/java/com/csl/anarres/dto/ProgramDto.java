@@ -3,6 +3,7 @@ package com.csl.anarres.dto;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * @author: Shilin Chai
@@ -13,6 +14,7 @@ import java.util.Date;
 public class ProgramDto {
     private String result;
     private String createrName;
+    private Map<String,String> codeMap;
 
 
     private String programId;

@@ -4,6 +4,7 @@ import com.csl.anarres.config.RunProgramConfig;
 import com.csl.anarres.dto.ProgramDto;
 import com.csl.anarres.entity.ProgramEntity;
 import com.csl.anarres.entity.UserEntity;
+import com.csl.anarres.enums.SupportLanguage;
 import com.csl.anarres.service.LoginService;
 import com.csl.anarres.service.ProgramService;
 import com.csl.anarres.service.impl.ProgramRunnable;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import redis.clients.jedis.Jedis;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -38,30 +40,30 @@ public class ProgramController {
     @RequestMapping("/programList")
     public ResponseTemplate programList(@RequestBody ProgramEntity entity,HttpServletRequest request) {
         try {
-            List<ProgramEntity> result = programService.programList(entity);
+            List<ProgramDto> result = programService.programList(entity);
             return ResponseUtil.success(result);
         }catch (Exception e){
             e.printStackTrace();
             return ResponseUtil.fail("程序保存失败"+e.getMessage());
         }
     }
-    @PostMapping("/saveProgram")
-    public ResponseTemplate saveProgram(@RequestBody ProgramEntity entity,HttpServletRequest request) {
+    @PostMapping("/saveProgram")//todo 保存程序，定时任务的硬删除程序 都需要针对数据库的变动进行修改
+    public ResponseTemplate saveProgram(@RequestBody ProgramDto dto,HttpServletRequest request) {
         try {
             UserEntity user = loginService.getUserInfo(request);
-            entity.setCreaterId(user.getUserId());
+            dto.setCreaterId(user.getUserId());
             //对于这种需要写库的操作，需要幂等性接口,防止频繁写库
-            String entityMD5 = HashcodeBuilder.getHashcode(entity.toString());
+            String entityMD5 = HashcodeBuilder.getHashcode(dto.toString());
             Jedis jedis = RedisUtil.getInstance();
             if(jedis.get(entityMD5) == null){
                 //如果是第一次请求
                 jedis.setex(entityMD5,(long)10,"1");//生成2s过时的主键，表明请求已在执行
-                String id = programService.saveProgramToSql(entity);
+                String id = programService.saveProgramToSql(dto);
                 //生成程序的主键id后,前端再次请求后会带上这个id,这样保证重复点击时只有两次会请求到数据库。
                 return ResponseUtil.success("保存成功",id);
             }else{
                 jedis.setex(entityMD5,(long)10,"1");//如果重复请求，就再延长2s
-                return ResponseUtil.success("请不要频繁点击",entity.getProgramId());
+                return ResponseUtil.success("请不要频繁点击",dto.getProgramId());
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -105,5 +107,14 @@ public class ProgramController {
             e.printStackTrace();
             return ResponseUtil.fail(e.getMessage());
         }
+    }
+
+    @RequestMapping("/supportLanguageList")
+    public ResponseTemplate supportLanguageList(){
+        List<String> result = new ArrayList<>();
+        for(SupportLanguage language : SupportLanguage.values()){
+            result.add(language.getName());
+        }
+        return ResponseUtil.success(result);
     }
 }

@@ -1,5 +1,6 @@
 package com.csl.anarres.service;
 
+import com.csl.anarres.dto.ProgramDto;
 import com.csl.anarres.entity.ProgramEntity;
 
 import java.io.FileNotFoundException;
@@ -12,7 +13,7 @@ import java.util.List;
  */
 public interface ProgramService {
 
-    List<ProgramEntity> programList(ProgramEntity entity);
+    List<ProgramDto> programList(ProgramEntity entity);
     /**
      * 运行程序，返回结果，可以考虑采用模板方法来制作，doProgram为实际方法
      * @param entity
@@ -32,7 +33,7 @@ public interface ProgramService {
      * @param entity
      * @return
      */
-    String saveProgramToSql(ProgramEntity entity);
+    String saveProgramToSql(ProgramDto dto);
 
     /**
      * 通过设置state为00来实现软删除

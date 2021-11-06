@@ -26,8 +26,6 @@
 
     <sql id="programColumnAll">
         p.P_ID as P_ID,
-        p.LANGUAGE as P_LANGUAGE,
-        p.CODE as P_CODE,
         p.CREATER_ID as P_CREATER_ID,
         p.CREATE_TIME as P_CREATE_TIME,
         p.CODE_MD5 as P_CODE_MD5,
@@ -38,12 +36,16 @@
     <select id="findProgramList" resultMap="programDtoMap">
         select
         <include refid="programColumnAll"/>
-        u.U_NAME as U_NAME
+        u.U_NAME as U_NAME,
+        pc.LANGUAGE as P_LANGUAGE,
+        pc.CODE as P_CODE
         from program p
         left join user u on p.CREATER_ID = u.U_ID
+        inner join programCode pc on p.P_ID = pc.P_ID
         <where>
             and p.CREATER_ID = #{query.createrId}
             and p.STATE != "00"
+            and pc.STATE != "00"
             <if test="query.programId != null and query.programId != ''">
                and p.P_ID = #{query.programId}
             </if>
