@@ -46,7 +46,7 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public List<ProgramDto> programList(ProgramEntity entity) {
-        List<ProgramDto> programDtos = mapper.findProgramList(entity);
+        List<ProgramDto> programDtos = mapper.findProgramList(entity);//这个是查出来有具体程序的
         Map<String, List<ProgramDto>> programMap = programDtos.stream().collect(Collectors.groupingBy(ProgramDto::getProgramId));
         List<ProgramDto> result = new ArrayList<>();
         programMap.forEach((programId, dtos) -> {
@@ -60,6 +60,7 @@ public class ProgramServiceImpl implements ProgramService {
             item.setCodeMap(codeMap);
             result.add(item);
         });
+        result.addAll(mapper.findEmptyProgramList(entity));
         return result;
     }
 
@@ -154,7 +155,9 @@ public class ProgramServiceImpl implements ProgramService {
             }
         });
         codeMapper.softDeleteList(dto.getProgramId());//插入前先软删除以前的
-        codeMapper.insertList(programCodeEntities);
+        if(programCodeEntities.size()>0){
+            codeMapper.insertList(programCodeEntities);
+        }
         return entity.getProgramId();
     }
 
