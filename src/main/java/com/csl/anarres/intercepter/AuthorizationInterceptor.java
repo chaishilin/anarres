@@ -27,7 +27,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         String token  = request.getHeader("token");
         Jedis jedis = RedisUtil.getInstance();
         try {
-            if(token != null){
+            if(token != null && !token.equals("null")){
                 userId = jedis.get(token);
             }
             if(token == null || "".equals(token) || userId == null || "".equals(userId)){

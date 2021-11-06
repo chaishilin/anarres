@@ -55,7 +55,9 @@ public class ProgramUtils {
                 //组成调用函数的那一行
                 runDefStr.append(defName);
                 runDefStr.append("(");
-                runDefStr.append(entity.getInput().replace(" ",","));
+                if(entity.getInput() != null && !"".equals(entity.getInput())){
+                    runDefStr.append(entity.getInput().replace(" ",","));
+                }
                 runDefStr.append(")");
                 runDefStr.append("\n");
 

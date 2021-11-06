@@ -1,6 +1,5 @@
 package com.csl.anarres.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.csl.anarres.config.RunProgramConfig;
 import com.csl.anarres.entity.ProgramEntity;
 import com.csl.anarres.enums.SupportLanguage;
@@ -8,10 +7,10 @@ import com.csl.anarres.enums.TableIdEnum;
 import com.csl.anarres.mapper.ProgramMapper;
 import com.csl.anarres.service.ProgramService;
 import com.csl.anarres.utils.CMDUtils;
-import com.csl.anarres.utils.ProgramUtils;
 import com.csl.anarres.utils.FileUtil;
 import com.csl.anarres.utils.HashcodeBuilder;
 import com.csl.anarres.utils.NumberGenerator;
+import com.csl.anarres.utils.ProgramUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,13 +25,13 @@ import java.util.List;
 @Service
 public class ProgramServiceImpl implements ProgramService {
     @Autowired
-    RunProgramConfig runProgramConfig;
+    private RunProgramConfig runProgramConfig;
     @Autowired
-    ProgramMapper mapper;
+    private ProgramMapper mapper;
     @Autowired
-    FileUtil fileUtil;
+    private FileUtil fileUtil;
     @Autowired
-    ProgramUtils programUtils;
+    private ProgramUtils programUtils;
 
     @Override
     public List<ProgramEntity> programList(ProgramEntity entity) {
@@ -96,34 +95,20 @@ public class ProgramServiceImpl implements ProgramService {
     public String saveProgramToSql(ProgramEntity entity) {
         entity.setCodeMD5(HashcodeBuilder.getHashcode(entity.getCode()));
         entity.setContentMD5(HashcodeBuilder.getHashcode(entity.getContent()));
-        entity.setCreateTime(new Date());
-        QueryWrapper<ProgramEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("CODE_MD5", entity.getCodeMD5());
-        queryWrapper.eq("TITLE", entity.getTitle());
-        queryWrapper.eq("CONTENT_MD5", entity.getContentMD5());
-        queryWrapper.eq("CREATER_ID", entity.getCreaterId());
-        List<ProgramEntity> programEntityList = mapper.selectList(queryWrapper);
-        if (programEntityList.size() == 0) {
-            entity.setCreateTime(new Date());
-            entity.setLastModifiedTime(new Date());
+        entity.setState("01");
+        entity.setPublicState("01");
+        entity.setLastModifiedTime(new Date());
+
+        //对发送主键的进行更新，对无主键的进行新增
+        if (entity.getProgramId() == null || "".equals(entity.getProgramId())) {
+            //无主键
             entity.setProgramId(NumberGenerator.getIdFromTableId(TableIdEnum.PROGRAM));
-            if (entity.getState() == null || "".equals(entity.getState())) {
-                entity.setState("01");
-            }
-            if (entity.getPublicState() == null || "".equals(entity.getPublicState())) {
-                entity.setPublicState("01");
-            }
+            entity.setCreateTime(new Date());
             mapper.insert(entity);
-            return entity.getProgramId();
-        } else if (programEntityList.size() == 1) {
-            ProgramEntity programEntity = programEntityList.get(0);
-            programEntity.setState("01");
-            mapper.updateById(programEntity);
-            return programEntityList.get(0).getProgramId();
         } else {
-            throw new RuntimeException("查到多条重复记录");
+            //有主键，更新
+            mapper.updateById(entity);
         }
+        return entity.getProgramId();
     }
-
-
 }

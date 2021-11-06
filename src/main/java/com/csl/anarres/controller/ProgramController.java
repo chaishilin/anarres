@@ -7,6 +7,8 @@ import com.csl.anarres.entity.UserEntity;
 import com.csl.anarres.service.LoginService;
 import com.csl.anarres.service.ProgramService;
 import com.csl.anarres.service.impl.ProgramRunnable;
+import com.csl.anarres.utils.HashcodeBuilder;
+import com.csl.anarres.utils.RedisUtil;
 import com.csl.anarres.utils.ResponseTemplate;
 import com.csl.anarres.utils.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import redis.clients.jedis.Jedis;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -27,11 +30,11 @@ import java.util.Map;
 @RestController
 public class ProgramController {
     @Autowired
-    ProgramService programService;
+    private ProgramService programService;
     @Autowired
-    RunProgramConfig runProgramConfig;
+    private RunProgramConfig runProgramConfig;
     @Autowired
-    LoginService loginService;
+    private LoginService loginService;
     @RequestMapping("/programList")
     public ResponseTemplate programList(@RequestBody ProgramEntity entity,HttpServletRequest request) {
         try {
@@ -47,8 +50,18 @@ public class ProgramController {
         try {
             UserEntity user = loginService.getUserInfo(request);
             entity.setCreaterId(user.getUserId());
-            String id = programService.saveProgramToSql(entity);
-            return ResponseUtil.success(id);
+            //对于这种需要写库的操作，需要幂等性接口,防止频繁写库
+            String entityMD5 = HashcodeBuilder.getHashcode(entity.toString());
+            Jedis jedis = RedisUtil.getInstance();
+            if(jedis.get(entityMD5) == null){
+                //如果是第一次请求
+                jedis.setex(entityMD5,(long)10,"1");//生成2s过时的主键，表明请求已在执行
+                String id = programService.saveProgramToSql(entity);
+                return ResponseUtil.success("保存成功",id);
+            }else{
+                jedis.setex(entityMD5,(long)10,"1");//如果重复请求，就再延长2s
+                return ResponseUtil.success("请不要频繁点击",entity.getProgramId());
+            }
         }catch (Exception e){
             e.printStackTrace();
             return ResponseUtil.fail("程序保存失败"+e.getMessage());
@@ -73,7 +86,7 @@ public class ProgramController {
             Thread t = new Thread(new ProgramRunnable(entity,programService));
             t.start();
             long now =System.currentTimeMillis();
-            while(entity.isReadable() == false){
+            while(!entity.isReadable()){
                 Thread.sleep(50);
                 if(System.currentTimeMillis() - now > runProgramConfig.getTimeout()){
                     t.interrupt();
