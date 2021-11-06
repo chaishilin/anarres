@@ -41,4 +41,9 @@ public interface ProgramService {
      */
     void deleteProgram(String programId);
 
+    /**
+     * 定时任务 硬删除程序
+     */
+    void hardDeleteProgram();
+
 }

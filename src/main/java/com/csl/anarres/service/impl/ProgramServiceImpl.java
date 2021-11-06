@@ -1,5 +1,6 @@
 package com.csl.anarres.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.csl.anarres.config.RunProgramConfig;
 import com.csl.anarres.entity.ProgramEntity;
 import com.csl.anarres.enums.SupportLanguage;
@@ -111,4 +112,16 @@ public class ProgramServiceImpl implements ProgramService {
         }
         return entity.getProgramId();
     }
+
+    @Override
+    public void hardDeleteProgram(){
+        QueryWrapper<ProgramEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("STATE","00");
+        queryWrapper.lt("LAST_MODIFIED_TIME",new Date());
+        mapper.selectList(queryWrapper).forEach(p->{
+            mapper.deleteById(p.getProgramId());
+            System.err.println(p.getProgramId()+" delete");
+        });
+    }
+
 }

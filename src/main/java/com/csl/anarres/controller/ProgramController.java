@@ -57,6 +57,7 @@ public class ProgramController {
                 //如果是第一次请求
                 jedis.setex(entityMD5,(long)10,"1");//生成2s过时的主键，表明请求已在执行
                 String id = programService.saveProgramToSql(entity);
+                //生成程序的主键id后,前端再次请求后会带上这个id,这样保证重复点击时只有两次会请求到数据库。
                 return ResponseUtil.success("保存成功",id);
             }else{
                 jedis.setex(entityMD5,(long)10,"1");//如果重复请求，就再延长2s
