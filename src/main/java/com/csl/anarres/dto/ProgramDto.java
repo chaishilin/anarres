@@ -11,10 +11,10 @@ import java.util.Map;
  * @Description:
  */
 @Data
-public class ProgramDto {
+public class ProgramDto implements Comparable<ProgramDto> {
     private String result;
     private String createrName;
-    private Map<String,String> codeMap;
+    private Map<String, String> codeMap;
 
 
     private String programId;
@@ -34,4 +34,22 @@ public class ProgramDto {
     private String output;//程序的输出
     private boolean needSave;
     private boolean readable;
+
+    @Override
+    public int compareTo(ProgramDto dto) {
+        if (!this.getPublicState().equals(dto.getPublicState())) {
+            if ("01".equals(this.getPublicState())) {
+                //公开的放前面
+                return 1;
+            } else {
+                return -1;
+            }
+        } else {
+            //同种对外状态，根据时间排序
+            return this.getLastModifiedTime().compareTo(dto.getLastModifiedTime());
+        }
+
+    }
+
+
 }

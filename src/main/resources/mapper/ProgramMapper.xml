@@ -31,6 +31,7 @@
         p.CODE_MD5 as P_CODE_MD5,
         p.TITLE as P_TITLE,
         p.CONTENT as P_CONTENT,
+        p.PUBLIC_STATE as P_PUBLIC_STATE,
         p.LAST_MODIFIED_TIME as P_LAST_MODIFIED_TIME
     </sql>
     <select id="findProgramList" resultMap="programDtoMap">

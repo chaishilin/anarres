@@ -15,7 +15,7 @@ import java.util.Date;
  */
 @Data
 @TableName("program")
-public class ProgramEntity {
+public class ProgramEntity implements Comparable<ProgramEntity>{
     @TableId(value = "P_ID",type = IdType.INPUT)
     private String programId;
     @TableField("LANGUAGE")
@@ -51,4 +51,18 @@ public class ProgramEntity {
     @TableField(exist = false)
     private boolean readable;
 
+    @Override
+    public int compareTo(ProgramEntity entity){
+        if(!this.getPublicState().equals(entity.getPublicState())){
+            if("01".equals(this.getPublicState())){
+                //公开的放前面
+                return 1;
+            }else{
+                return -1;
+            }
+        }else {
+            //同种对外状态，根据时间排序
+            return this.getLastModifiedTime().compareTo(entity.getLastModifiedTime());
+        }
+    }
 }

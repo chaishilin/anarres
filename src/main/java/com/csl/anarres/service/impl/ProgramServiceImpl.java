@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -61,6 +62,8 @@ public class ProgramServiceImpl implements ProgramService {
             result.add(item);
         });
         result.addAll(mapper.findEmptyProgramList(entity));
+        result.sort(ProgramDto::compareTo);
+        Collections.reverse(result);
         return result;
     }
 
@@ -125,7 +128,9 @@ public class ProgramServiceImpl implements ProgramService {
         entity.setCodeMD5(HashcodeBuilder.getHashcode(entity.getCode()));
         entity.setContentMD5(HashcodeBuilder.getHashcode(entity.getContent()));
         entity.setState("01");
-        entity.setPublicState("01");
+        if(entity.getPublicState() == null || "".equals(entity.getPublicState())){
+            entity.setPublicState("01");
+        }
         entity.setLastModifiedTime(new Date());
 
         //对发送主键的进行更新，对无主键的进行新增
