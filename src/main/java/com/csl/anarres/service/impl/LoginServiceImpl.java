@@ -22,8 +22,12 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public UserEntity getUserInfo(HttpServletRequest request) {
         String token = request.getHeader("token");
-        Jedis jedis = RedisUtil.getInstance();
-        String userId = jedis.get(token);
-        return userMapper.selectById(userId);
+        if(token == null || token.equals("")){
+            return null;
+        }else{
+            Jedis jedis = RedisUtil.getInstance();
+            String userId = jedis.get(token);
+            return userMapper.selectById(userId);
+        }
     }
 }

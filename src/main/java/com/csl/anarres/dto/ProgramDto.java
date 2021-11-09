@@ -15,6 +15,8 @@ public class ProgramDto implements Comparable<ProgramDto> {
     private String result;
     private String createrName;
     private Map<String, String> codeMap;
+    private boolean isSelf;
+    private boolean isLogin;
 
 
     private String programId;

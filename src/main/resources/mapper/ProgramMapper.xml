@@ -9,7 +9,7 @@
         <result  column="P_CODE" property="code"></result >
         <result  column="P_CREATE_TIME" property="createTime"></result >
         <result  column="P_LAST_MODIFIED_TIME" property="lastModifiedTime"></result >
-        <result  column="P_CREATER_ID " property="createrId"></result >
+        <result  column="P_CREATER_ID" property="createrId"></result >
         <result  column="P_CODE_MD5" property="codeMD5"></result >
         <result  column="P_CONTENT_MD5" property="contentMD5"></result >
         <result  column="P_TITLE" property="title"></result >

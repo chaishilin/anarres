@@ -44,7 +44,6 @@ public class ProgramServiceImpl implements ProgramService {
     private FileUtil fileUtil;
     @Autowired
     private ProgramUtils programUtils;
-
     @Override
     public List<ProgramDto> programList(ProgramEntity entity) {
         List<ProgramDto> programDtos = mapper.findProgramList(entity);//这个是查出来有具体程序的
@@ -115,8 +114,8 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public void deleteProgram(String programId) {
-        ProgramEntity entity = mapper.selectById(programId);
+    public void deleteProgram(ProgramDto dto) {
+        ProgramEntity entity = mapper.selectById(dto.getProgramId());
         entity.setState("00");
         mapper.updateById(entity);
     }

@@ -21,7 +21,8 @@ public class LoginConfig implements WebMvcConfigurer {
         registration.excludePathPatterns("/login");
         registration.excludePathPatterns("/register");
         registration.excludePathPatterns("/resetPassword");
-        registration.excludePathPatterns("/programList/");
+        registration.excludePathPatterns("/programList");
+        registration.excludePathPatterns("/doRemoteProgram");
 
     }
 }

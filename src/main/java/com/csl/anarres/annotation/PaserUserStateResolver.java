@@ -24,7 +24,7 @@ import java.lang.reflect.Field;
  * @Description:
  */
 @Component
-public class TokenArgumentResolver implements HandlerMethodArgumentResolver {
+public class PaserUserStateResolver implements HandlerMethodArgumentResolver {
     @Autowired
     private LoginService loginService;
 
@@ -36,7 +36,7 @@ public class TokenArgumentResolver implements HandlerMethodArgumentResolver {
      */
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(UserSelfOnly.class) || parameter.hasMethodAnnotation(UserSelfOnly.class);
+        return parameter.hasParameterAnnotation(PaserUserState.class);
     }
 
     /**
@@ -54,11 +54,19 @@ public class TokenArgumentResolver implements HandlerMethodArgumentResolver {
         assert request != null;
         String json = readFromInputStream(request);//在request的inputStream中获取json字符串
         Object result = JSONObject.parseObject(json, parameter.getParameterType());//利用fastJson，根据字符串生成对象
-        //迄今为止，类似于实现了@requestBody的功能
+        //到此，类似于实现了@requestBody的功能
         UserEntity user = loginService.getUserInfo(request);//利用token获得userEntity
-        Field createrId = result.getClass().getDeclaredField("createrId");//获取对象的createrId属性
-        createrId.setAccessible(true);
-        createrId.set(result,user.getUserId());//设置请求对象的createrId为token对应的userId
+        if(user != null){
+            setDeclaredBoolField(result,"isLogin",true);
+            String userId =(String) getDeclaredField(result,"createrId");//获取对象的createrId属性
+            if(userId.equals(user.getUserId())){
+                setDeclaredBoolField(result,"isSelf",true);
+            }else{
+                setDeclaredBoolField(result,"isSelf",false);
+            }
+        }else{
+            setDeclaredBoolField(result,"isLogin",false);
+        }//这边是设置是成功的
     return result;
     }
 
@@ -76,6 +84,17 @@ public class TokenArgumentResolver implements HandlerMethodArgumentResolver {
             e.printStackTrace();
         }
         return result.toString();
+    }
+
+    private void setDeclaredBoolField(Object o,String field,boolean value) throws NoSuchFieldException, IllegalAccessException {
+        Field createrId = o.getClass().getDeclaredField(field);//获取对象的field属性
+        createrId.setAccessible(true);
+        createrId.set(o,value);
+    }
+    private Object getDeclaredField(Object o,String field) throws NoSuchFieldException, IllegalAccessException {
+        Field createrId = o.getClass().getDeclaredField(field);//获取对象的createrId属性
+        createrId.setAccessible(true);
+        return  createrId.get(o);
     }
 
 

@@ -1,6 +1,6 @@
 package com.csl.anarres.config;
 
-import com.csl.anarres.annotation.TokenArgumentResolver;
+import com.csl.anarres.annotation.PaserUserStateResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -16,11 +16,11 @@ import java.util.List;
 @Configuration
 public class DefaultWebMvcConfig extends WebMvcConfigurationSupport {
     @Autowired
-    private TokenArgumentResolver tokenArgumentResolver;
+    private PaserUserStateResolver paserUserStateResolver;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         //注入用户信息
-        argumentResolvers.add(tokenArgumentResolver);
+        argumentResolvers.add(paserUserStateResolver);
     }
 }

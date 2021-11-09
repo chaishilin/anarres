@@ -1,6 +1,6 @@
 package com.csl.anarres.controller;
 
-import com.csl.anarres.annotation.UserSelfOnly;
+import com.csl.anarres.annotation.PaserUserState;
 import com.csl.anarres.config.RunProgramConfig;
 import com.csl.anarres.dto.ProgramDto;
 import com.csl.anarres.entity.ProgramEntity;
@@ -12,8 +12,10 @@ import com.csl.anarres.utils.HashcodeBuilder;
 import com.csl.anarres.utils.RedisUtil;
 import com.csl.anarres.utils.ResponseTemplate;
 import com.csl.anarres.utils.ResponseUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import redis.clients.jedis.Jedis;
@@ -21,7 +23,6 @@ import redis.clients.jedis.Jedis;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author: Shilin Chai
@@ -29,6 +30,12 @@ import java.util.Map;
  * @Description:
  */
 @RestController
+//todo 需要根据权限进行复杂的操作
+/*
+saveProgram：未登录时：不能点，登录是自己时，能保存。登录不是自己时，能保存一份自己的
+deleteProgram：未登录和登录不是自己时，报错，是自己时，能删除
+doRemoteProgram：都可以
+ */
 public class ProgramController {
     @Autowired
     private ProgramService programService;
@@ -38,31 +45,47 @@ public class ProgramController {
     private LoginService loginService;
 
     @RequestMapping("/programList")
-    public ResponseTemplate programList(@UserSelfOnly ProgramEntity entity, HttpServletRequest request) {
+    //todo 注解：如果用户一致，则很好，否则清空createrId，并且填入notLog，notSelf等字段，跟具体的程序判断
+    public ResponseTemplate programList(@PaserUserState ProgramDto dto, HttpServletRequest request) {
         try {
-            //@UserSelfOnly 注解的方式自动装填entity.createrId
-            List<ProgramDto> result = programService.programList(entity);
-            return ResponseUtil.success(result);
+            //@PaserUserState 注解的方式装填dto中的是否登录和是否本人
+            List<ProgramDto> result = null;
+            String msg = null;
+            ProgramEntity entity  = new ProgramEntity();
+            BeanUtils.copyProperties(dto,entity);
+            if(dto.getProgramId() != null && !"".equals(dto.getProgramId())){
+                //查看具体程序不需要校验是否登录或者本人
+                entity.setCreaterId(null);
+                result = programService.programList(entity);
+                msg = "具体程序";
+            }else if(dto.isLogin() && dto.isSelf()){
+                //如果是登录并且是本人，那么返回本人的列表
+                result = programService.programList(entity);
+                msg = "个人程序清单";
+            }else{
+                //如果没有登录，或者请求的createrId是public,就返回公共列表
+                entity.setPublicState("01");
+                entity.setCreaterId(null);
+                result = programService.programList(entity);
+                msg = "公共程序清单";
+            }
+            return ResponseUtil.success(msg,result);
         }catch (Exception e){
             e.printStackTrace();
             return ResponseUtil.fail("程序列表查询失败"+e.getMessage());
         }
     }
-    @RequestMapping("/publicProgramList")
-    public ResponseTemplate publicProgramList() {
-        try {
-            ProgramEntity entity = new ProgramEntity();
-            entity.setPublicState("01");
-            List<ProgramDto> result = programService.programList(entity);
-            return ResponseUtil.success(result);
-        }catch (Exception e){
-            e.printStackTrace();
-            return ResponseUtil.fail("公共列表查询失败"+e.getMessage());
-        }
-    }
+    //todo 类似于saveProgram的fork功能
+
     @PostMapping("/saveProgram")//todo 保存程序，定时任务的硬删除程序 都需要针对数据库的变动进行修改
-    public ResponseTemplate saveProgram(@UserSelfOnly ProgramDto dto,HttpServletRequest request) {
+    public ResponseTemplate saveProgram(@PaserUserState ProgramDto dto, HttpServletRequest request) {
         try {
+            if(!dto.isLogin()){
+                throw new RuntimeException("未登录");
+            }
+            if(!dto.isSelf()){
+                throw new RuntimeException("不是本人的程序，不能保存！");
+            }
             //对于这种需要写库的操作，需要幂等性接口,防止频繁写库
             String entityMD5 = HashcodeBuilder.getHashcode(dto.toString());
             Jedis jedis = RedisUtil.getInstance();
@@ -82,18 +105,23 @@ public class ProgramController {
         }
     }
     @PostMapping("/deleteProgram")
-    public ResponseTemplate deleteProgram(@UserSelfOnly Map<String,String> map, HttpServletRequest request) {
+    public ResponseTemplate deleteProgram(@PaserUserState ProgramDto dto, HttpServletRequest request) {
         try {
-            String programId = map.get("programId");
-            programService.deleteProgram(programId);
-            return ResponseUtil.success(programId);
+            if(!dto.isLogin()){
+                throw new RuntimeException("未登录");
+            }
+            if(!dto.isSelf()){
+                throw new RuntimeException("不是本人的程序，不能删除！");
+            }
+            programService.deleteProgram(dto);
+            return ResponseUtil.success(dto.getProgramId());
         }catch (Exception e){
             e.printStackTrace();
             return ResponseUtil.fail("程序删除失败"+e.getMessage());
         }
     }
     @PostMapping("/doRemoteProgram")
-    public ResponseTemplate doRemoteProgram(@UserSelfOnly ProgramEntity entity,HttpServletRequest request){
+    public ResponseTemplate doRemoteProgram(@RequestBody ProgramEntity entity, HttpServletRequest request){
         try{
             Thread t = new Thread(new ProgramRunnable(entity,programService));
             t.start();

@@ -37,10 +37,10 @@ public interface ProgramService {
 
     /**
      * 通过设置state为00来实现软删除
-     * @param programId
+     * @param dto
      * @return
      */
-    void deleteProgram(String programId);
+    void deleteProgram(ProgramDto dto);
 
     /**
      * 定时任务 硬删除程序
