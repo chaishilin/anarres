@@ -1,5 +1,6 @@
 package com.csl.anarres.controller;
 
+import com.csl.anarres.annotation.UserSelfOnly;
 import com.csl.anarres.config.RunProgramConfig;
 import com.csl.anarres.dto.ProgramDto;
 import com.csl.anarres.entity.ProgramEntity;
@@ -14,7 +15,6 @@ import com.csl.anarres.utils.ResponseTemplate;
 import com.csl.anarres.utils.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import redis.clients.jedis.Jedis;
@@ -37,9 +37,11 @@ public class ProgramController {
     private RunProgramConfig runProgramConfig;
     @Autowired
     private LoginService loginService;
+
     @RequestMapping("/programList")
-    public ResponseTemplate programList(@RequestBody ProgramEntity entity,HttpServletRequest request) {
+    public ResponseTemplate programList(@UserSelfOnly ProgramEntity entity, HttpServletRequest request) {
         try {
+            //@UserSelfOnly 注解的方式自动装填entity.createrId
             List<ProgramDto> result = programService.programList(entity);
             return ResponseUtil.success(result);
         }catch (Exception e){
@@ -48,10 +50,8 @@ public class ProgramController {
         }
     }
     @PostMapping("/saveProgram")//todo 保存程序，定时任务的硬删除程序 都需要针对数据库的变动进行修改
-    public ResponseTemplate saveProgram(@RequestBody ProgramDto dto,HttpServletRequest request) {
+    public ResponseTemplate saveProgram(@UserSelfOnly ProgramDto dto,HttpServletRequest request) {
         try {
-            UserEntity user = loginService.getUserInfo(request);
-            dto.setCreaterId(user.getUserId());
             //对于这种需要写库的操作，需要幂等性接口,防止频繁写库
             String entityMD5 = HashcodeBuilder.getHashcode(dto.toString());
             Jedis jedis = RedisUtil.getInstance();
@@ -71,7 +71,7 @@ public class ProgramController {
         }
     }
     @PostMapping("/deleteProgram")
-    public ResponseTemplate deleteProgram(@RequestBody Map<String,String> map, HttpServletRequest request) {
+    public ResponseTemplate deleteProgram(@UserSelfOnly Map<String,String> map, HttpServletRequest request) {
         try {
             String programId = map.get("programId");
             programService.deleteProgram(programId);
@@ -82,7 +82,7 @@ public class ProgramController {
         }
     }
     @PostMapping("/doRemoteProgram")
-    public ResponseTemplate doRemoteProgram(@RequestBody ProgramEntity entity,HttpServletRequest request){
+    public ResponseTemplate doRemoteProgram(@UserSelfOnly ProgramEntity entity,HttpServletRequest request){
         try{
             UserEntity user = loginService.getUserInfo(request);
             entity.setCreaterId(user.getUserId());

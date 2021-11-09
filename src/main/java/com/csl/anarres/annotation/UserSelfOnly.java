@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * @Date: 2021/10/28 17:31
  * @Description:
  */
-@Target({ElementType.METHOD,ElementType.TYPE})
+@Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AuthToken {
+public @interface UserSelfOnly {
 }
