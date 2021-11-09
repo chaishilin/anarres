@@ -4,7 +4,6 @@ import com.csl.anarres.annotation.UserSelfOnly;
 import com.csl.anarres.config.RunProgramConfig;
 import com.csl.anarres.dto.ProgramDto;
 import com.csl.anarres.entity.ProgramEntity;
-import com.csl.anarres.entity.UserEntity;
 import com.csl.anarres.enums.SupportLanguage;
 import com.csl.anarres.service.LoginService;
 import com.csl.anarres.service.ProgramService;
@@ -46,7 +45,19 @@ public class ProgramController {
             return ResponseUtil.success(result);
         }catch (Exception e){
             e.printStackTrace();
-            return ResponseUtil.fail("程序保存失败"+e.getMessage());
+            return ResponseUtil.fail("程序列表查询失败"+e.getMessage());
+        }
+    }
+    @RequestMapping("/publicProgramList")
+    public ResponseTemplate publicProgramList() {
+        try {
+            ProgramEntity entity = new ProgramEntity();
+            entity.setPublicState("01");
+            List<ProgramDto> result = programService.programList(entity);
+            return ResponseUtil.success(result);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseUtil.fail("公共列表查询失败"+e.getMessage());
         }
     }
     @PostMapping("/saveProgram")//todo 保存程序，定时任务的硬删除程序 都需要针对数据库的变动进行修改
@@ -84,8 +95,6 @@ public class ProgramController {
     @PostMapping("/doRemoteProgram")
     public ResponseTemplate doRemoteProgram(@UserSelfOnly ProgramEntity entity,HttpServletRequest request){
         try{
-            UserEntity user = loginService.getUserInfo(request);
-            entity.setCreaterId(user.getUserId());
             Thread t = new Thread(new ProgramRunnable(entity,programService));
             t.start();
             long now =System.currentTimeMillis();

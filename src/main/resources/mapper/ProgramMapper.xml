@@ -44,9 +44,14 @@
         left join user u on p.CREATER_ID = u.U_ID
         right join programCode pc on p.P_ID = pc.P_ID
         <where>
-            and p.CREATER_ID = #{query.createrId}
             and p.STATE != "00"
             and pc.STATE != "00"
+            <if test="query.createrId != null and query.createrId != ''">
+                and p.CREATER_ID = #{query.createrId}
+            </if>
+            <if test="query.publicState != null and query.publicState != ''">
+                and p.PUBLIC_STATE = #{query.publicState}
+            </if>
             <if test="query.programId != null and query.programId != ''">
                and p.P_ID = #{query.programId}
             </if>
