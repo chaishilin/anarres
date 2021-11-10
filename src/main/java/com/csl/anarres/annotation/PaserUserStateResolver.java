@@ -58,11 +58,12 @@ public class PaserUserStateResolver implements HandlerMethodArgumentResolver {
         UserEntity user = loginService.getUserInfo(request);//利用token获得userEntity
         if(user != null){
             setDeclaredBoolField(result,"isLogin",true);
-            String userId =(String) getDeclaredField(result,"createrId");//获取对象的createrId属性
-            if(userId.equals(user.getUserId())){
-                setDeclaredBoolField(result,"isSelf",true);
-            }else{
+            String createrId =(String) getDeclaredField(result,"createrId");//获取对象的createrId属性
+
+            if(createrId == null || !createrId.equals(user.getUserId())){
                 setDeclaredBoolField(result,"isSelf",false);
+            }else{
+                setDeclaredBoolField(result,"isSelf",true);
             }
         }else{
             setDeclaredBoolField(result,"isLogin",false);

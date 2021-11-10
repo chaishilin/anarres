@@ -7,7 +7,7 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
 run-program-config:
   relative-path: programs
-  timeout: 5000
+  timeout: 10000
 mybatis-plus:
   mapper-locations: classpath*:mapper/*.xml
   type-aliases-package: com.csl.anarres.entity

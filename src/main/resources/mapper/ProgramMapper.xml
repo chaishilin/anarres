@@ -5,17 +5,17 @@
 
     <resultMap id="programMap" type="com.csl.anarres.entity.ProgramEntity">
         <id column="P_ID" property="programId"></id>
-        <result  column="P_LANGUAGE" property="language"></result >
-        <result  column="P_CODE" property="code"></result >
-        <result  column="P_CREATE_TIME" property="createTime"></result >
-        <result  column="P_LAST_MODIFIED_TIME" property="lastModifiedTime"></result >
-        <result  column="P_CREATER_ID" property="createrId"></result >
-        <result  column="P_CODE_MD5" property="codeMD5"></result >
-        <result  column="P_CONTENT_MD5" property="contentMD5"></result >
-        <result  column="P_TITLE" property="title"></result >
-        <result  column="P_CONTENT" property="content"></result >
-        <result  column="P_STATE" property="state"></result >
-        <result  column="P_PUBLIC_STATE" property="publicState"></result >
+        <result column="P_LANGUAGE" property="language"></result>
+        <result column="P_CODE" property="code"></result>
+        <result column="P_CREATE_TIME" property="createTime"></result>
+        <result column="P_LAST_MODIFIED_TIME" property="lastModifiedTime"></result>
+        <result column="P_CREATER_ID" property="createrId"></result>
+        <result column="P_CODE_MD5" property="codeMD5"></result>
+        <result column="P_CONTENT_MD5" property="contentMD5"></result>
+        <result column="P_TITLE" property="title"></result>
+        <result column="P_CONTENT" property="content"></result>
+        <result column="P_STATE" property="state"></result>
+        <result column="P_PUBLIC_STATE" property="publicState"></result>
     </resultMap>
 
     <resultMap id="programDtoMap" type="com.csl.anarres.dto.ProgramDto" extends="programMap">
@@ -46,14 +46,14 @@
         <where>
             and p.STATE != "00"
             and pc.STATE != "00"
-            <if test="query.createrId != null and query.createrId != ''">
+            <if test="query.createrId != null and query.createrId != '' and query.createrId != 'public'">
                 and p.CREATER_ID = #{query.createrId}
             </if>
             <if test="query.publicState != null and query.publicState != ''">
                 and p.PUBLIC_STATE = #{query.publicState}
             </if>
             <if test="query.programId != null and query.programId != ''">
-               and p.P_ID = #{query.programId}
+                and p.P_ID = #{query.programId}
             </if>
             <if test="query.language != null and query.language != ''">
                 and p.LANGUAGE = #{query.language}
@@ -72,7 +72,15 @@
         left join user u on p.CREATER_ID = u.U_ID
         <where>
             and p.STATE != '00'
-            and p.CREATER_ID = #{query.createrId}
+            <if test="query.createrId != null and query.createrId != '' and query.createrId != 'public'">
+                and p.CREATER_ID = #{query.createrId}
+            </if>
+            <if test="query.publicState != null and query.publicState != ''">
+                and p.PUBLIC_STATE = #{query.publicState}
+            </if>
+            <if test="query.programId != null and query.programId != ''">
+                and p.P_ID = #{query.programId}
+            </if>
             and p.P_ID not in (select pc.P_ID from programCode pc where pc.STATE != '00')
         </where>
 
