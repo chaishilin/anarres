@@ -175,8 +175,8 @@ public class ProgramServiceImpl implements ProgramService {
             System.err.println(p.getProgramId() + " delete");
         });
         QueryWrapper<ProgramCodeEntity> codeQueryWrapper= new QueryWrapper<>();
-        queryWrapper.eq("STATE", "00");
-        queryWrapper.lt("CREATE_TIME", new Date());
+        codeQueryWrapper.eq("STATE", "00");
+        codeQueryWrapper.lt("CREATE_TIME", new Date());
         codeMapper.selectList(codeQueryWrapper).forEach(p -> {
             codeMapper.deleteById(p.getProgramCodeId());
             System.err.println(p.getProgramCodeId() + " delete");
