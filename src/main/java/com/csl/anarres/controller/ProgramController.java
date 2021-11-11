@@ -12,6 +12,8 @@ import com.csl.anarres.utils.HashcodeBuilder;
 import com.csl.anarres.utils.RedisUtil;
 import com.csl.anarres.utils.ResponseTemplate;
 import com.csl.anarres.utils.ResponseUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,6 +45,7 @@ public class ProgramController {
     private RunProgramConfig runProgramConfig;
     @Autowired
     private LoginService loginService;
+    Logger logger = LoggerFactory.getLogger(ProgramController.class);
 
     @RequestMapping("/programList")
     //todo 注解：如果用户一致，则很好，否则清空createrId，并且填入notLog，notSelf等字段，跟具体的程序判断
@@ -94,6 +97,7 @@ public class ProgramController {
                 jedis.setex(entityMD5,(long)10,"1");//生成2s过时的主键，表明请求已在执行
                 String id = programService.saveProgramToSql(dto);
                 //生成程序的主键id后,前端再次请求后会带上这个id,这样保证重复点击时只有两次会请求到数据库。
+                logger.info("保存程序,id:"+id+" 成功");
                 return ResponseUtil.success("保存成功",id);
             }else{
                 jedis.setex(entityMD5,(long)10,"1");//如果重复请求，就再延长2s
