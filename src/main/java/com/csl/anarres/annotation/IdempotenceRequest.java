@@ -13,6 +13,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})//还是要用拦截器或者aop 用aop试试
 @Retention(RetentionPolicy.RUNTIME)
 public @interface IdempotenceRequest {
-    //可重复请求时间：单位毫秒
-    int value() default 2000;
+    //可重复请求时间：单位秒
+    int value() default 2;
 }

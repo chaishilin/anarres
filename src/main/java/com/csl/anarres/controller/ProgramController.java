@@ -49,7 +49,6 @@ public class ProgramController {
     Logger logger = LoggerFactory.getLogger(ProgramController.class);
 
     @RequestMapping("/programList")
-    @IdempotenceRequest
     public ResponseTemplate programList(@PaserUserState ProgramDto dto, HttpServletRequest request) {
         try {
             //@PaserUserState 注解的方式装填dto中的是否登录和是否本人
@@ -81,7 +80,7 @@ public class ProgramController {
     }
     //todo 类似于saveProgram的fork功能
 
-    @IdempotenceRequest
+    @IdempotenceRequest(value = 5)
     @PostMapping("/saveProgram")//todo 保存程序，定时任务的硬删除程序 都需要针对数据库的变动进行修改
     public ResponseTemplate saveProgram(@PaserUserState ProgramDto dto, HttpServletRequest request) {
         try {
@@ -118,6 +117,7 @@ public class ProgramController {
         }
     }
 
+    @IdempotenceRequest(value = 5)
     @PostMapping("/doRemoteProgram")
     public ResponseTemplate doRemoteProgram(@RequestBody ProgramEntity entity, HttpServletRequest request) {
         try {
@@ -152,7 +152,8 @@ public class ProgramController {
             return ResponseUtil.fail(e.getMessage());
         }
     }
-    @IdempotenceRequest
+
+    @IdempotenceRequest(value = 10)
     @RequestMapping("/supportLanguageList")
     public ResponseTemplate supportLanguageList() {
         List<String> result = new ArrayList<>();

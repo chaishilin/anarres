@@ -8,6 +8,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -32,13 +33,15 @@ public class IdempotenceRequestAspect {
     @Around("validRequest()")
     public Object Interceptor(ProceedingJoinPoint joinPoint) throws Throwable {
         Object result = null;
+        MethodSignature msg = (MethodSignature) joinPoint.getSignature();
+        int idempotenceRequestTime = msg.getMethod().getAnnotation(IdempotenceRequest.class).value();
         Object[] args = joinPoint.getArgs();
         String sign = joinPoint.getSignature().getName();
         String argMD5 = null;
         if (args.length >= 1) {
             //如果请求是有参数的,md5为参数+方法
             argMD5 = HashcodeBuilder.getHashcode(args[0].toString() + sign);
-        }else {
+        } else {
             //否则，md5为方法
             argMD5 = HashcodeBuilder.getHashcode(sign);
         }
@@ -50,11 +53,11 @@ public class IdempotenceRequestAspect {
                 return JSONObject.toJavaObject(JSONObject.parseObject(response), ResponseTemplate.class);
             } catch (Exception e) {
                 //如果从缓存的数据转换失败，则进行请求，并将响应计入缓存
-                return doRequestWithArg(joinPoint, argMD5, 20);
+                return doRequestWithArg(joinPoint, argMD5, idempotenceRequestTime);
             }
         } else {
             //如果没有，则进行请求，并将响应计入缓存
-            return doRequestWithArg(joinPoint, argMD5, 20);
+            return doRequestWithArg(joinPoint, argMD5, idempotenceRequestTime);
         }
     }
 
