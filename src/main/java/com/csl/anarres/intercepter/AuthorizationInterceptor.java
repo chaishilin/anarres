@@ -4,8 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.csl.anarres.utils.RedisUtil;
 import com.csl.anarres.utils.ResponseTemplate;
 import com.csl.anarres.utils.ResponseUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import redis.clients.jedis.Jedis;
@@ -19,9 +22,13 @@ import java.io.PrintWriter;
  * @Date: 2021/10/28 17:24
  * @Description:
  */
+@Component
 public class AuthorizationInterceptor implements HandlerInterceptor {
+    private Logger logger = LoggerFactory.getLogger(AuthorizationInterceptor.class);
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler){
+        logger.info("执行 AuthorizationInterceptor "+"登录校验");
         String userId = "";
         PrintWriter printWriter = null;
         String token  = request.getHeader("token");

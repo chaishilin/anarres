@@ -2,6 +2,7 @@ package com.csl.anarres.annotation;
 
 import com.alibaba.fastjson.JSONObject;
 import com.csl.anarres.utils.HashcodeBuilder;
+import com.csl.anarres.utils.JoinPointUtil;
 import com.csl.anarres.utils.RedisUtil;
 import com.csl.anarres.utils.ResponseTemplate;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -11,6 +12,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 
@@ -19,7 +21,7 @@ import redis.clients.jedis.Jedis;
  * @Date: 2021/11/8 19:11
  * @Description:
  */
-
+@Order(1)
 @Aspect
 @Component
 public class IdempotenceRequestAspect {
@@ -31,12 +33,12 @@ public class IdempotenceRequestAspect {
     }//只是个函数签名，帮助记录的
 
     @Around("validRequest()")
-    public Object Interceptor(ProceedingJoinPoint joinPoint) throws Throwable {
-        Object result = null;
+    public Object Interceptor(ProceedingJoinPoint joinPoint) {
         MethodSignature msg = (MethodSignature) joinPoint.getSignature();
         int idempotenceRequestTime = msg.getMethod().getAnnotation(IdempotenceRequest.class).value();
         Object[] args = joinPoint.getArgs();
         String sign = joinPoint.getSignature().getName();
+        logger.info(sign+" 使用注解：IdempotenceRequest");
         String argMD5 = null;
         if (args.length >= 1) {
             //如果请求是有参数的,md5为参数+方法
@@ -53,32 +55,11 @@ public class IdempotenceRequestAspect {
                 return JSONObject.toJavaObject(JSONObject.parseObject(response), ResponseTemplate.class);
             } catch (Exception e) {
                 //如果从缓存的数据转换失败，则进行请求，并将响应计入缓存
-                return doRequestWithArg(joinPoint, argMD5, idempotenceRequestTime);
+                return JoinPointUtil.doRequestWithArg(joinPoint, argMD5, idempotenceRequestTime);
             }
         } else {
             //如果没有，则进行请求，并将响应计入缓存
-            return doRequestWithArg(joinPoint, argMD5, idempotenceRequestTime);
+            return JoinPointUtil.doRequestWithArg(joinPoint, argMD5, idempotenceRequestTime);
         }
-    }
-
-    private Object doRequestWithArg(ProceedingJoinPoint joinPoint, String argMD5, long exTime) {
-        Object result = null;
-        try {
-            result = doRequest(joinPoint);
-            jedis.setex(argMD5, exTime, JSONObject.toJSONString(result));
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    private Object doRequest(ProceedingJoinPoint joinPoint) {
-        Object result = null;
-        try {
-            result = joinPoint.proceed();
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-        return result;
     }
 }

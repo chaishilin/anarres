@@ -34,6 +34,7 @@ public class FileUtil {
         StringBuilder result = new StringBuilder();
         try {
             File resourcefile = ResourceUtils.getFile("classpath:"+path);
+            System.out.println(resourcefile);
             BufferedReader br = new BufferedReader(new FileReader(resourcefile));
             String temp;
             while((temp=br.readLine())!=null){

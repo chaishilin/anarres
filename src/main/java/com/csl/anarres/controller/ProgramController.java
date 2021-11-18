@@ -2,6 +2,7 @@ package com.csl.anarres.controller;
 
 import com.csl.anarres.annotation.IdempotenceRequest;
 import com.csl.anarres.annotation.PaserUserState;
+import com.csl.anarres.annotation.RequestFrequency;
 import com.csl.anarres.config.RunProgramConfig;
 import com.csl.anarres.dto.ProgramDto;
 import com.csl.anarres.entity.ProgramEntity;
@@ -9,8 +10,6 @@ import com.csl.anarres.enums.SupportLanguage;
 import com.csl.anarres.service.LoginService;
 import com.csl.anarres.service.ProgramService;
 import com.csl.anarres.service.impl.ProgramRunnable;
-import com.csl.anarres.utils.HashcodeBuilder;
-import com.csl.anarres.utils.RedisUtil;
 import com.csl.anarres.utils.ResponseTemplate;
 import com.csl.anarres.utils.ResponseUtil;
 import org.slf4j.Logger;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import redis.clients.jedis.Jedis;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -78,8 +76,8 @@ public class ProgramController {
             return ResponseUtil.fail("程序列表查询失败" + e.getMessage());
         }
     }
-    //todo 类似于saveProgram的fork功能
 
+    @RequestFrequency(value = 5)//对于请求，限制请求频率
     @IdempotenceRequest(value = 5)
     @PostMapping("/saveProgram")//todo 保存程序，定时任务的硬删除程序 都需要针对数据库的变动进行修改
     public ResponseTemplate saveProgram(@PaserUserState ProgramDto dto, HttpServletRequest request) {
@@ -117,19 +115,11 @@ public class ProgramController {
         }
     }
 
-    @IdempotenceRequest(value = 5)
+    @RequestFrequency(value = 5)//对于请求，限制请求频率
+    @IdempotenceRequest(value = 5)//对于调用服务器资源的操作，需要幂等性接口,防止频繁占用资源
     @PostMapping("/doRemoteProgram")
     public ResponseTemplate doRemoteProgram(@RequestBody ProgramEntity entity, HttpServletRequest request) {
         try {
-            //对于调用服务器资源的操作，需要幂等性接口,防止频繁占用资源
-            String entityMD5 = HashcodeBuilder.getHashcode(entity.toString());
-            Jedis jedis = RedisUtil.getInstance();
-            if (jedis.get(entityMD5) == null) {
-                //如果是第一次请求
-
-            } else {
-                //todo 封装幂等性判断注解，用于方法，用来判断是否重复调用，并且自定义调用频率
-            }
             Thread t = new Thread(new ProgramRunnable(entity, programService));
             t.start();
             long now = System.currentTimeMillis();

@@ -59,7 +59,6 @@ public class PaserUserStateResolver implements HandlerMethodArgumentResolver {
         if(user != null){
             setDeclaredBoolField(result,"isLogin",true);
             String createrId =(String) getDeclaredField(result,"createrId");//获取对象的createrId属性
-
             if(createrId == null || !createrId.equals(user.getUserId())){
                 setDeclaredBoolField(result,"isSelf",false);
             }else{

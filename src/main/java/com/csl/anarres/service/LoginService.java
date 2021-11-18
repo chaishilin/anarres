@@ -11,4 +11,6 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface LoginService {
     UserEntity getUserInfo(HttpServletRequest request);
+
+    String getUserId(HttpServletRequest request);
 }
