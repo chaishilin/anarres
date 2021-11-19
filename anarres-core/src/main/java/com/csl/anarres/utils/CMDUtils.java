@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class CMDUtils {
     public static String execCMD(String command){
+        System.out.println(command);
         StringBuilder result = new StringBuilder();
         StringBuilder errorResult = new StringBuilder();
         Process process = null;

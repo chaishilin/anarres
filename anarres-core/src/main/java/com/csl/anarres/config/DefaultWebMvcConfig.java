@@ -33,6 +33,7 @@ public class DefaultWebMvcConfig extends WebMvcConfigurationSupport {
         InterceptorRegistration registration = registry.addInterceptor(authorizationInterceptor);
         registration.addPathPatterns("/**");
         registration.excludePathPatterns("/login");
+        registration.excludePathPatterns("/logout");
         registration.excludePathPatterns("/register");
         registration.excludePathPatterns("/resetPassword");
         registration.excludePathPatterns("/programList");
