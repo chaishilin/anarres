@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.csl.anarres.mapper.ProgramMapper">
+
+    <resultMap id="programMap" type="com.csl.anarres.entity.ProgramEntity">
+        <id column="P_ID" property="programId"></id>
+        <result column="P_LANGUAGE" property="language"></result>
+        <result column="P_CODE" property="code"></result>
+        <result column="P_CREATE_TIME" property="createTime"></result>
+        <result column="P_LAST_MODIFIED_TIME" property="lastModifiedTime"></result>
+        <result column="P_CREATER_ID" property="createrId"></result>
+        <result column="P_CODE_MD5" property="codeMD5"></result>
+        <result column="P_CONTENT_MD5" property="contentMD5"></result>
+        <result column="P_TITLE" property="title"></result>
+        <result column="P_CONTENT" property="content"></result>
+        <result column="P_STATE" property="state"></result>
+        <result column="P_PUBLIC_STATE" property="publicState"></result>
+    </resultMap>
+
+    <resultMap id="programDtoMap" type="com.csl.anarres.dto.ProgramDto" extends="programMap">
+        <result column="U_NAME" property="createrName"></result>
+
+    </resultMap>
+
+
+    <sql id="programColumnAll">
+        p.P_ID as P_ID,
+        p.CREATER_ID as P_CREATER_ID,
+        p.CREATE_TIME as P_CREATE_TIME,
+        p.CODE_MD5 as P_CODE_MD5,
+        p.TITLE as P_TITLE,
+        p.CONTENT as P_CONTENT,
+        p.PUBLIC_STATE as P_PUBLIC_STATE,
+        p.LAST_MODIFIED_TIME as P_LAST_MODIFIED_TIME
+    </sql>
+    <select id="findProgramList" resultMap="programDtoMap">
+        select
+        <include refid="programColumnAll"/>,
+        u.U_NAME as U_NAME,
+        pc.LANGUAGE as P_LANGUAGE,
+        pc.CODE as P_CODE
+        from program p
+        left join user u on p.CREATER_ID = u.U_ID
+        right join programCode pc on p.P_ID = pc.P_ID
+        <where>
+            and p.STATE != "00"
+            and pc.STATE != "00"
+            <if test="query.createrId != null and query.createrId != '' and query.createrId != 'public'">
+                and p.CREATER_ID = #{query.createrId}
+            </if>
+            <if test="query.publicState != null and query.publicState != ''">
+                and p.PUBLIC_STATE = #{query.publicState}
+            </if>
+            <if test="query.programId != null and query.programId != ''">
+                and p.P_ID = #{query.programId}
+            </if>
+            <if test="query.language != null and query.language != ''">
+                and p.LANGUAGE = #{query.language}
+            </if>
+            <if test="query.codeMD5 != null and query.codeMD5 != ''">
+                and p.CODEMD5 = #{query.codeMD5}
+            </if>
+        </where>
+    </select>
+
+    <select id="findEmptyProgramList" resultMap="programDtoMap">
+        select
+        <include refid="programColumnAll"/>,
+        u.U_NAME as U_NAME
+        from program p
+        left join user u on p.CREATER_ID = u.U_ID
+        <where>
+            and p.STATE != '00'
+            <if test="query.createrId != null and query.createrId != '' and query.createrId != 'public'">
+                and p.CREATER_ID = #{query.createrId}
+            </if>
+            <if test="query.publicState != null and query.publicState != ''">
+                and p.PUBLIC_STATE = #{query.publicState}
+            </if>
+            <if test="query.programId != null and query.programId != ''">
+                and p.P_ID = #{query.programId}
+            </if>
+            and p.P_ID not in (select pc.P_ID from programCode pc where pc.STATE != '00')
+        </where>
+
+    </select>
+</mapper>
