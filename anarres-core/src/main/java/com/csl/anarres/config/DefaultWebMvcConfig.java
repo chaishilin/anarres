@@ -20,8 +20,6 @@ import java.util.List;
 public class DefaultWebMvcConfig extends WebMvcConfigurationSupport {
     @Autowired
     private PaserUserStateResolver paserUserStateResolver;
-    @Autowired
-    private AuthorizationInterceptor authorizationInterceptor;
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         //注入用户信息
@@ -30,7 +28,7 @@ public class DefaultWebMvcConfig extends WebMvcConfigurationSupport {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        InterceptorRegistration registration = registry.addInterceptor(authorizationInterceptor);
+        InterceptorRegistration registration = registry.addInterceptor(new AuthorizationInterceptor());
         registration.addPathPatterns("/**");
         registration.excludePathPatterns("/login");
         registration.excludePathPatterns("/logout");

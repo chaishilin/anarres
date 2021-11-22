@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServletRequest;
 @Aspect
 @Component
 public class RequestFrequencyAspect{
-    //两个切面的话，如何实现
     private Logger logger = LoggerFactory.getLogger(RequestFrequencyAspect.class);
     private Jedis jedis = RedisUtil.getInstance();
     @Autowired

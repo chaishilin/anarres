@@ -3,6 +3,7 @@ package com.csl.anarres.annotation;
 import com.alibaba.fastjson.JSONObject;
 import com.csl.anarres.entity.UserEntity;
 import com.csl.anarres.service.LoginService;
+import com.csl.anarres.utils.RequestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.lang.Nullable;
@@ -13,9 +14,6 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 
 /**
@@ -52,7 +50,7 @@ public class PaserUserStateResolver implements HandlerMethodArgumentResolver {
                                   NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         assert request != null;
-        String json = readFromInputStream(request);//在request的inputStream中获取json字符串
+        String json = RequestUtil.readFromInputStream(request);//在request的inputStream中获取json字符串
         Object result = JSONObject.parseObject(json, parameter.getParameterType());//利用fastJson，根据字符串生成对象
         //到此，类似于实现了@requestBody的功能
         UserEntity user = loginService.getUserInfo(request);//利用token获得userEntity
@@ -68,22 +66,6 @@ public class PaserUserStateResolver implements HandlerMethodArgumentResolver {
             setDeclaredBoolField(result,"isLogin",false);
         }//这边是设置是成功的
     return result;
-    }
-
-    private String readFromInputStream(HttpServletRequest request) {
-        StringBuilder result = new StringBuilder();
-        String line = null;
-        BufferedReader bufferedReader = null;
-        try {
-            bufferedReader = new BufferedReader(new InputStreamReader(request.getInputStream()));
-            while ((line = bufferedReader.readLine())!= null){
-                result.append(line);
-            }
-            bufferedReader.close();
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-        return result.toString();
     }
 
     private void setDeclaredBoolField(Object o,String field,boolean value) throws NoSuchFieldException, IllegalAccessException {

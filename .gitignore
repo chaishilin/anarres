@@ -5,7 +5,8 @@ secret.md
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-
+.gitignore
+out/
 ### STS ###
 .apt_generated
 .classpath

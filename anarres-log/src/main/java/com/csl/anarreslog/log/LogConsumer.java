@@ -17,16 +17,11 @@ import java.util.Properties;
  */
 @Component
 public class LogConsumer {
-    static {
-        System.out.println("hello world! log");
-    }
-
-    @PostConstruct
-    public void cunsume() {
-        System.out.println("kaishixiaofei");
+    private String topic = "log";
+    private KafkaConsumer initKafkaConsumer() {
         Properties props = new Properties();
         props.put("bootstrap.servers", "localhost:9092");
-        props.put("group.id", "112");
+        props.put("group.id", "123");
         props.put("enable.auto.commit", "true");
         props.put("auto.commit.interval.ms", "1000");
         props.put("session.timeout.ms", "30000");
@@ -34,16 +29,23 @@ public class LogConsumer {
         props.put("auto.offset.reset", "earliest");
         props.put("key.deserializer", StringDeserializer.class.getName());
         props.put("value.deserializer", StringDeserializer.class.getName());
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(props);
-        consumer.subscribe(Arrays.asList("test"));
-        ConsumerRecords<String, String> msgList = consumer.poll(1000);
-        for (ConsumerRecord<String, String> msg : msgList) {
-            processLog(msg.value());
-        }
-        System.out.println("endkaishixiaofei");
+        return new KafkaConsumer<String, String>(props);
     }
 
-    private void processLog(String msg){
+
+    @PostConstruct
+    public void consume() {
+        KafkaConsumer consumer = initKafkaConsumer();
+        consumer.subscribe(Arrays.asList(topic));
+        while (true) {
+            ConsumerRecords<String, String> msgList = consumer.poll(1000);
+            for (ConsumerRecord<String, String> msg : msgList) {
+                processLog(msg.value());
+            }
+        }
+    }
+
+    private void processLog(String msg) {
         System.out.println("---------");
         System.out.println(msg);
     }

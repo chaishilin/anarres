@@ -31,12 +31,6 @@ import java.util.List;
  * @Description:
  */
 @RestController
-//todo 需要根据权限进行复杂的操作
-/*
-saveProgram：未登录时：不能点，登录是自己时，能保存。登录不是自己时，能保存一份自己的
-deleteProgram：未登录和登录不是自己时，报错，是自己时，能删除
-doRemoteProgram：都可以
- */
 public class ProgramController {
     @Autowired
     private ProgramService programService;
