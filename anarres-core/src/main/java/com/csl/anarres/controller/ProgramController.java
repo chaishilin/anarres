@@ -2,6 +2,7 @@ package com.csl.anarres.controller;
 
 import com.csl.anarres.annotation.IdempotenceRequest;
 import com.csl.anarres.annotation.PaserUserState;
+import com.csl.anarres.annotation.RemoveCache;
 import com.csl.anarres.annotation.RequestFrequency;
 import com.csl.anarres.config.RunProgramConfig;
 import com.csl.anarres.dto.ProgramDto;
@@ -40,6 +41,7 @@ public class ProgramController {
     private LoginService loginService;
     Logger logger = LoggerFactory.getLogger(ProgramController.class);
 
+    @IdempotenceRequest(requestMethod = "{userId}programList")
     @RequestMapping("/programList")
     public ResponseTemplate programList(@PaserUserState ProgramDto dto, HttpServletRequest request) {
         try {
@@ -71,8 +73,9 @@ public class ProgramController {
         }
     }
 
-    @RequestFrequency(value = 5)//对于请求，限制请求频率
-    @IdempotenceRequest(value = 5)
+    @RequestFrequency(value = 1)//对于请求，限制请求频率
+    @IdempotenceRequest(requestMethod = "{userId}saveProgram")
+    @RemoveCache(requestMethod = "{userId}programList")
     @PostMapping("/saveProgram")//todo 保存程序，定时任务的硬删除程序 都需要针对数据库的变动进行修改
     public ResponseTemplate saveProgram(@PaserUserState ProgramDto dto, HttpServletRequest request) {
         try {
@@ -93,6 +96,7 @@ public class ProgramController {
     }
 
     @PostMapping("/deleteProgram")
+    @RemoveCache(requestMethod = "{userId}programList")
     public ResponseTemplate deleteProgram(@PaserUserState ProgramDto dto, HttpServletRequest request) {
         try {
             if (!dto.isLogin()) {
@@ -110,7 +114,7 @@ public class ProgramController {
     }
 
     @RequestFrequency(value = 5)//对于请求，限制请求频率
-    @IdempotenceRequest(value = 5)//对于调用服务器资源的操作，需要幂等性接口,防止频繁占用资源
+    @IdempotenceRequest(requestMethod = "{userId}doRemoteProgram")//对于调用服务器资源的操作，需要幂等性接口,防止频繁占用资源
     @PostMapping("/doRemoteProgram")
     public ResponseTemplate doRemoteProgram(@RequestBody ProgramEntity entity, HttpServletRequest request) {
         try {
@@ -137,7 +141,7 @@ public class ProgramController {
         }
     }
 
-    @IdempotenceRequest(value = 10)
+    @IdempotenceRequest(requestMethod = "{userId}supportLanguageList")
     @RequestMapping("/supportLanguageList")
     public ResponseTemplate supportLanguageList() {
         List<String> result = new ArrayList<>();

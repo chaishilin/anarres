@@ -1,6 +1,6 @@
 package com.csl.anarres.config;
 
-import com.csl.anarres.annotation.PaserUserStateResolver;
+import com.csl.anarres.aspect.PaserUserStateResolver;
 import com.csl.anarres.intercepter.AuthorizationInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

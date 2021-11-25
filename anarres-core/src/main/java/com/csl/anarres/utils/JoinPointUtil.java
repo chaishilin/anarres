@@ -11,17 +11,26 @@ import redis.clients.jedis.Jedis;
  */
 public class JoinPointUtil {
     private static Jedis jedis = RedisUtil.getInstance();
-    public static Object doRequestWithArg(ProceedingJoinPoint joinPoint, String argMD5, long exTime) {
+    public static Object doRequestCacheInHset(ProceedingJoinPoint joinPoint, String hashtableName , String key, long exTime) {
         Object result = null;
         try {
             result = doRequest(joinPoint);
-            jedis.setex(argMD5, exTime, JSONObject.toJSONString(result));
+            jedis.hset(hashtableName,key, JSONObject.toJSONString(result));
         } catch (Throwable e) {
             e.printStackTrace();
         }
         return result;
     }
-
+    public static Object doRequestCacheInKey(ProceedingJoinPoint joinPoint, String key, long exTime) {
+        Object result = null;
+        try {
+            result = doRequest(joinPoint);
+            jedis.setex(key,exTime,JSONObject.toJSONString(result));
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
     public static Object doRequest(ProceedingJoinPoint joinPoint) {
         Object result = null;
         try {

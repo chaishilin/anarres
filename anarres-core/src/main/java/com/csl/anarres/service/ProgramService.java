@@ -30,7 +30,7 @@ public interface ProgramService {
 
     /**
      * 存入数据库，生成程序的md5签名，作者，程序内容
-     * @param entity
+     * @param dto
      * @return
      */
     String saveProgramToSql(ProgramDto dto);

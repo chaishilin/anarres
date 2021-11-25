@@ -17,7 +17,7 @@ public class RedisUtil {
      * 单例模式获得redis连接
      * @return
      */
-    public static Jedis getInstance(){
+    public synchronized static Jedis getInstance(){
         if(jedis == null){
             jedis = new Jedis("http://localhost:6379");
         }

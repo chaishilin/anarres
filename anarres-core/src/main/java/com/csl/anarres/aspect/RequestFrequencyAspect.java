@@ -1,8 +1,9 @@
-package com.csl.anarres.annotation;
+package com.csl.anarres.aspect;
 
-import com.csl.anarres.service.LoginService;
+import com.csl.anarres.annotation.RequestFrequency;
 import com.csl.anarres.utils.HashcodeBuilder;
 import com.csl.anarres.utils.JoinPointUtil;
+import com.csl.anarres.utils.LoginUtil;
 import com.csl.anarres.utils.RedisUtil;
 import com.csl.anarres.utils.ResponseUtil;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -15,11 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 import redis.clients.jedis.Jedis;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author: Shilin Chai
@@ -34,7 +31,8 @@ public class RequestFrequencyAspect{
     private Logger logger = LoggerFactory.getLogger(RequestFrequencyAspect.class);
     private Jedis jedis = RedisUtil.getInstance();
     @Autowired
-    private LoginService loginService;
+    private LoginUtil loginUtil;
+
 
 
     @Pointcut("execution(public * com.csl.anarres.controller.*.*(..)) && @annotation(com.csl.anarres.annotation.RequestFrequency)")
@@ -46,17 +44,12 @@ public class RequestFrequencyAspect{
         MethodSignature msg = (MethodSignature) joinPoint.getSignature();
         String methodName = msg.getMethod().getName();
         logger.info(methodName+" 使用注解：RequestFrequency");
-        //获取RequestAttributes
-        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-        //从获取RequestAttributes中获取HttpServletRequest的信息
-        assert requestAttributes != null;
-        HttpServletRequest request = (HttpServletRequest) requestAttributes.resolveReference(RequestAttributes.REFERENCE_REQUEST);
-        String userId = loginService.getUserId(request);//利用token获得userEntity
+        String userId = loginUtil.getCurrentUserOrPublic().getUserId();//利用token获得userEntity
         String userMethodMD5 = HashcodeBuilder.getHashcode(userId+methodName);
         int requestFrequencyTime = msg.getMethod().getAnnotation(RequestFrequency.class).value();
         if(jedis.get(userMethodMD5) == null){
             //如果最近没有请求过
-            return JoinPointUtil.doRequestWithArg(joinPoint, userMethodMD5, requestFrequencyTime);//则进行请求
+            return JoinPointUtil.doRequestCacheInKey(joinPoint, userMethodMD5, requestFrequencyTime);//则进行请求
         }else{
             //否则报错，避免频繁请求
             return ResponseUtil.fail("不要频繁请求");
