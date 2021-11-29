@@ -1,7 +1,6 @@
 package com.csl.anarres.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.csl.anarres.annotation.CacheAnnotation.AddCache;
 import com.csl.anarres.config.RunProgramConfig;
 import com.csl.anarres.dto.ProgramDto;
 import com.csl.anarres.entity.ProgramCodeEntity;
@@ -46,7 +45,6 @@ public class ProgramServiceImpl implements ProgramService {
     @Autowired
     private ProgramUtils programUtils;
     @Override
-    @AddCache(path = "a.s.d")
     public List<ProgramDto> programList(ProgramEntity entity) {
         List<ProgramDto> programDtos = mapper.findProgramList(entity);//这个是查出来有具体程序的
         Map<String, List<ProgramDto>> programMap = programDtos.stream().collect(Collectors.groupingBy(ProgramDto::getProgramId));

@@ -24,7 +24,6 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private UserMapper userMapper;
     @Override
-    @CacheEnable
     public UserEntity getUserInfo(HttpServletRequest request) {
         //结果存入缓存
         //这个方法比较简单，并且在aop中也有调用，所以运用缓存注解来添加注解会套娃

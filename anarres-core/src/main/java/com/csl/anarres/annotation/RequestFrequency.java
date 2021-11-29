@@ -12,7 +12,6 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-@CacheEnable
 public @interface RequestFrequency {
     //两次不同请求的间隔时间：单位秒
     int value() default 2;

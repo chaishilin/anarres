@@ -13,7 +13,6 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-@CacheEnable
 public @interface RemoveCache {
     /*
       可以清除多个redis中的路径,分号分隔,example:programList;userList

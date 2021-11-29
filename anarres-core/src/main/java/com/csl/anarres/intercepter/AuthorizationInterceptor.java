@@ -44,6 +44,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
                 return false;
             }
         }catch (Exception e){
+            System.out.println(e.getClass());
             e.printStackTrace();
         }finally {
             if(null != printWriter){

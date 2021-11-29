@@ -12,7 +12,6 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-@CacheEnable
 public @interface IdempotenceRequest {
     //可重复请求时间：单位秒
     int requestTime() default 60;
