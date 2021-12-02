@@ -25,7 +25,7 @@ import redis.clients.jedis.Jedis;
  */
 @Order(1)//首先判断是否为相同内容的频繁请求
 @Aspect
-@Component//todo redis挂了怎么办
+@Component
 public class IdempotenceRequestAspect {
     Logger logger = LoggerFactory.getLogger(IdempotenceRequestAspect.class);
     Jedis jedis = RedisUtil.getInstance();

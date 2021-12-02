@@ -1,5 +1,6 @@
 package com.csl.anarres.utils;
 
+import com.csl.anarres.enums.OsType;
 import com.csl.anarres.exception.RunProgramException;
 
 import java.io.BufferedReader;
@@ -13,11 +14,11 @@ import java.util.concurrent.TimeUnit;
  */
 public class CMDUtils {
     public static String execCMD(String command){
-        System.out.println(command);
         StringBuilder result = new StringBuilder();
         StringBuilder errorResult = new StringBuilder();
         Process process = null;
-        command = "cmd.exe /c " + command;
+        command = CMDWapper(command);
+        System.out.println(command);
         try {
 
             process = Runtime.getRuntime().exec(command);
@@ -51,4 +52,25 @@ public class CMDUtils {
             throw new RunProgramException(e.getMessage());
         }
     }
+
+    public static String CMDWapper(String command){
+        if(systemType().equals(OsType.Windows)){
+            return "cmd.exe /c " + command;
+        }else{
+            return command;
+        }
+    }
+
+    public static OsType systemType(){
+        String osName = System.getProperty("os.name");
+        if(osName.contains("win") || osName.contains("Win")){
+            return OsType.Windows;
+        }else if(osName.contains("mac") || osName.contains("Mac")){
+            return OsType.MacOs;
+        }else{
+            return OsType.Linux;
+        }
+    }
+
+
 }
