@@ -97,14 +97,14 @@ public class ProgramServiceImpl implements ProgramService {
             String fileName = entity.getClassName() + SupportLanguage.valueOf(entity.getLanguage()).getSuffix();
             switch (SupportLanguage.valueOf(entity.getLanguage())) {
                 case java:
-                    CMDUtils.execCMD("cd " + path + "&&" + "javac " + fileName);
-                    result = CMDUtils.execCMD("cd " + path + "&&" + "java " + entity.getClassName() + "  " + entity.getInput());
+                    CMDUtils.execCMD(path,"javac " + fileName);
+                    result = CMDUtils.execCMD(path, "java " + entity.getClassName() + "  " + entity.getInput());
                     break;
                 case golang:
-                    result = CMDUtils.execCMD("cd " + path + "&&" + "go run " + fileName + " " + entity.getInput());
+                    result = CMDUtils.execCMD(path, "go run " + fileName + " " + entity.getInput());
                     break;
                 case python:
-                    result = CMDUtils.execCMD("cd " + path + "&&" + "python " + fileName);
+                    result = CMDUtils.execCMD(path,"python " + fileName);
                     break;
             }
             entity.setOutput(result);

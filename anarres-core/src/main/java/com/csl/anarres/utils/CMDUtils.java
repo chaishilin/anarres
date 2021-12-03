@@ -4,6 +4,7 @@ import com.csl.anarres.enums.OsType;
 import com.csl.anarres.exception.RunProgramException;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.concurrent.TimeUnit;
 
@@ -13,15 +14,11 @@ import java.util.concurrent.TimeUnit;
  * @Description:
  */
 public class CMDUtils {
-    public static String execCMD(String command){
+    public static String execCMD(String path,String command){
         StringBuilder result = new StringBuilder();
         StringBuilder errorResult = new StringBuilder();
-        Process process = null;
-        command = CMDWapper(command);
-        System.out.println(command);
         try {
-
-            process = Runtime.getRuntime().exec(command);
+            Process process = cmdProcess(path,command);
             if(!process.waitFor(10000, TimeUnit.MILLISECONDS)){
                 process.destroy();
                 //实际上还是无法kill cmd生成的子进程，windows 环境下放弃杀死子进程了（反正也不拿windows当服务器）
@@ -33,10 +30,10 @@ public class CMDUtils {
                     new InputStreamReader(process.getErrorStream(),"GBK"));
             String errorLine = null;
             while ((errorLine = bufferedErrorReader.readLine()) != null){
-                errorResult.append(errorLine+"\n");
+                errorResult.append(errorLine).append("\n");
             }
 
-            if(errorResult.toString() != null && !"".equals(errorResult.toString())) {
+            if(!"".equals(errorResult.toString())) {
                 throw new RunProgramException(errorResult.toString());
             }
             //如果不报错，获得其输出
@@ -44,7 +41,7 @@ public class CMDUtils {
                     new InputStreamReader(process.getInputStream(),"GBK"));
             String line = null;
             while ((line = bufferedReader.readLine()) != null){
-                result.append(line+"\n");
+                result.append(line).append("\n");
             }
             return result.toString();
         }catch (Exception e){
@@ -53,12 +50,16 @@ public class CMDUtils {
         }
     }
 
-    public static String CMDWapper(String command){
+    private static Process cmdProcess(String path,String command) throws IOException {
+        Process process = null;
         if(systemType().equals(OsType.Windows)){
-            return "cmd.exe /c " + command;
+            command =  "cmd.exe /c " + "cd " + path + "&&" + command;
+            process = Runtime.getRuntime().exec(command);
         }else{
-            return command;
+            command =  "cd " + path + " && " + command;
+            process = Runtime.getRuntime().exec(new String[]{"/bin/sh","-c",command});
         }
+        return process;
     }
 
     public static OsType systemType(){
