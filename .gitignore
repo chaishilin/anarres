@@ -2,11 +2,11 @@ HELP.md
 target/
 test/
 secret.md
+anarres-core/src/main/resources/application.yml
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 .gitignore
-anarres-core/src/main/resources/application.yml
 out/
 ### STS ###
 .apt_generated
