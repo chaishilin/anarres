@@ -56,7 +56,7 @@ public class CMDUtils {
             command =  "cmd.exe /c " + "cd " + path + "&&" + command;
             process = Runtime.getRuntime().exec(command);
         }else{
-            command =  "cd " + path + " && " + command;
+            command = "cd " + path + " && " + command;
             process = Runtime.getRuntime().exec(new String[]{"/bin/sh","-c",command});
         }
         return process;

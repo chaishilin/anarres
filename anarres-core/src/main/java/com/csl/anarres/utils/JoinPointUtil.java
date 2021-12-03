@@ -15,7 +15,9 @@ public class JoinPointUtil {
         Object result = null;
         try {
             result = doRequest(joinPoint);
-            jedis.hset(hashtableName,key, JSONObject.toJSONString(result));
+            if(checkResponce(result)){
+                jedis.hset(hashtableName,key, JSONObject.toJSONString(result));
+            }
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -25,7 +27,9 @@ public class JoinPointUtil {
         Object result = null;
         try {
             result = doRequest(joinPoint);
-            jedis.setex(key,exTime,JSONObject.toJSONString(result));
+            if(checkResponce(result)){
+                jedis.setex(key,exTime,JSONObject.toJSONString(result));
+            }
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -39,5 +43,10 @@ public class JoinPointUtil {
             e.printStackTrace();
         }
         return result;
+    }
+
+    private static boolean checkResponce(Object result){
+        JSONObject resultObject = JSONObject.parseObject(JSONObject.toJSONString(result));
+        return resultObject != null && resultObject.getString("code").equals("200");
     }
 }

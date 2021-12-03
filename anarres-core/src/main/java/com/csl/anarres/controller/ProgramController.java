@@ -113,7 +113,7 @@ public class ProgramController {
         }
     }
 
-    @RequestFrequency(value = 5)//对于请求，限制请求频率
+    @RequestFrequency(value = 1)//对于请求，限制请求频率
     @IdempotenceRequest(requestMethod = "{userId}doRemoteProgram")//对于调用服务器资源的操作，需要幂等性接口,防止频繁占用资源
     @PostMapping("/doRemoteProgram")
     public ResponseTemplate doRemoteProgram(@RequestBody ProgramEntity entity, HttpServletRequest request) {
