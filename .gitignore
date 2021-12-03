@@ -6,6 +6,7 @@ secret.md
 !**/src/main/**/target/
 !**/src/test/**/target/
 .gitignore
+anarres-core/src/main/resources/application.yml
 out/
 ### STS ###
 .apt_generated
