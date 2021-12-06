@@ -2,7 +2,6 @@ package com.csl.anarres.utils;
 
 import com.alibaba.fastjson.JSONObject;
 import org.aspectj.lang.ProceedingJoinPoint;
-import redis.clients.jedis.Jedis;
 
 /**
  * @author: Shilin Chai
@@ -10,13 +9,12 @@ import redis.clients.jedis.Jedis;
  * @Description:
  */
 public class JoinPointUtil {
-    private static Jedis jedis = RedisUtil.getInstance();
     public static Object doRequestCacheInHset(ProceedingJoinPoint joinPoint, String hashtableName , String key, long exTime) {
         Object result = null;
         try {
             result = doRequest(joinPoint);
             if(checkResponce(result)){
-                jedis.hset(hashtableName,key, JSONObject.toJSONString(result));
+                RedisUtil.getInstance().hset(hashtableName,key, JSONObject.toJSONString(result));
             }
         } catch (Throwable e) {
             e.printStackTrace();
@@ -28,7 +26,7 @@ public class JoinPointUtil {
         try {
             result = doRequest(joinPoint);
             if(checkResponce(result)){
-                jedis.setex(key,exTime,JSONObject.toJSONString(result));
+                RedisUtil.getInstance().setex(key,exTime,JSONObject.toJSONString(result));
             }
         } catch (Throwable e) {
             e.printStackTrace();

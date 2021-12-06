@@ -11,7 +11,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-import redis.clients.jedis.Jedis;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,10 +31,9 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         String userId = "";
         PrintWriter printWriter = null;
         String token  = request.getHeader("token");
-        Jedis jedis = RedisUtil.getInstance();
         try {
             if(token != null && !token.equals("null")){
-                userId = jedis.get(token);
+                userId = RedisUtil.getInstance().get(token);
             }
             if(token == null || "".equals(token) || userId == null || "".equals(userId)){
                 printWriter = response.getWriter();

@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import redis.clients.jedis.Jedis;
 
 /**
  * @author: Shilin Chai
@@ -28,7 +27,6 @@ import redis.clients.jedis.Jedis;
 @Component
 public class IdempotenceRequestAspect {
     Logger logger = LoggerFactory.getLogger(IdempotenceRequestAspect.class);
-    Jedis jedis = RedisUtil.getInstance();
     @Autowired
     private LoginUtil loginUtil;
     @Pointcut("execution(public * com.csl.anarres.controller.*.*(..)) && @annotation(com.csl.anarres.annotation.IdempotenceRequest)")
@@ -44,7 +42,7 @@ public class IdempotenceRequestAspect {
         String key = requestMethod.replace("{userId}",userId);
         Object[] args = joinPoint.getArgs();
         String field = args.length >=1 ? JSONObject.toJSONString(args[0]):"{}";//如果请求是有参数的,则设置key为请求参数
-        String response = jedis.hget(key,field);
+        String response = RedisUtil.getInstance().hget(key,field);
         if (response != null) {
             try {
                 logger.info(key+" 使用注解：IdempotenceRequest 读取到缓存");

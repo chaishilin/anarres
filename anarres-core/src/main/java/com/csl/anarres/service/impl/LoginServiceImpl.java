@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import redis.clients.jedis.Jedis;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -32,8 +31,7 @@ public class LoginServiceImpl implements LoginService {
         if(userId == null){
             return null;
         }else{
-            Jedis jedis = RedisUtil.getInstance();
-            String userJson = jedis.get("userInfo"+userId);
+            String userJson = RedisUtil.getInstance().get("userInfo"+userId);
             try {
                 //如果缓存中有，则直接返回
                 if(userJson == null || "".equals(userJson)){
@@ -44,7 +42,7 @@ public class LoginServiceImpl implements LoginService {
             }catch (Exception e){
                 //如果缓存中没有，则计入缓存
                 UserEntity result = userMapper.selectById(userId);
-                jedis.set("userInfo"+userId, JSONObject.toJSONString(result));
+                RedisUtil.getInstance().set("userInfo"+userId, JSONObject.toJSONString(result));
                 return result;
             }
         }
@@ -56,8 +54,7 @@ public class LoginServiceImpl implements LoginService {
         if(token == null || token.equals("")){
             return null;
         }else{
-            Jedis jedis = RedisUtil.getInstance();
-            return jedis.get(token);
+            return RedisUtil.getInstance().get(token);
         }
     }
 }

@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import redis.clients.jedis.Jedis;
 
 import java.util.Map;
 
@@ -26,7 +25,6 @@ import java.util.Map;
 @Component
 public class RemoveCacheAspect {
     private Logger logger = LoggerFactory.getLogger(RemoveCacheAspect.class);
-    private Jedis jedis = RedisUtil.getInstance();
 
     @Autowired
     private LoginUtil loginUtil;
@@ -51,9 +49,9 @@ public class RemoveCacheAspect {
             String userId = loginUtil.getCurrentUserOrPublic().getUserId();
             for(String path : paths){
                 String key = path.replace("{userId}",userId);
-                Map<String,String> hmap = jedis.hgetAll(key);
+                Map<String,String> hmap = RedisUtil.getInstance().hgetAll(key);
                 for(String field:hmap.keySet()){
-                    jedis.hdel(key,field);
+                    RedisUtil.getInstance().hdel(key,field);
                 }
                 logger.info("成功删除缓存"+userId+":"+path);
             }

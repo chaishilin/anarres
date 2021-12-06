@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import redis.clients.jedis.Jedis;
 
 import java.util.Date;
 
@@ -25,14 +24,13 @@ public class ProgramScheduleTask {
 
     @Scheduled(cron = "0 0 1 * * ?")//每天凌晨执行一次
     public void deleteProgram() {
-        Jedis jedis = RedisUtil.getInstance();
-        if (!"null".equals(jedis.get("deleteProgram"))){
+        if (!"null".equals(RedisUtil.getInstance().get("deleteProgram"))){
             //如果没有线程正在删除，那么就删除
             System.err.println("开始删除"+new Date());
-            jedis.setex(HashcodeBuilder.getHashcode("deleteProgram"), (long)1,"1");
+            RedisUtil.getInstance().setex(HashcodeBuilder.getHashcode("deleteProgram"), (long)1,"1");
             //设置正在删除
             programService.hardDeleteProgram();
-            jedis.del("deleteProgram");//程序结束后取消置位
+            RedisUtil.getInstance().del("deleteProgram");//程序结束后取消置位
             System.err.println("删除结束");
         }
 

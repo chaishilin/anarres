@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import redis.clients.jedis.Jedis;
 
 /**
  * @author: Shilin Chai
@@ -29,7 +28,6 @@ import redis.clients.jedis.Jedis;
 @Component
 public class RequestFrequencyAspect{
     private Logger logger = LoggerFactory.getLogger(RequestFrequencyAspect.class);
-    private Jedis jedis = RedisUtil.getInstance();
     @Autowired
     private LoginUtil loginUtil;
 
@@ -47,7 +45,7 @@ public class RequestFrequencyAspect{
         String userId = loginUtil.getCurrentUserOrPublic().getUserId();//利用token获得userEntity
         String userMethodMD5 = HashcodeBuilder.getHashcode(userId+methodName);
         int requestFrequencyTime = msg.getMethod().getAnnotation(RequestFrequency.class).value();
-        if(jedis.get(userMethodMD5) == null){
+        if(RedisUtil.getInstance().get(userMethodMD5) == null){
             //如果最近没有请求过
             return JoinPointUtil.doRequestCacheInKey(joinPoint, userMethodMD5, requestFrequencyTime);//则进行请求
         }else{

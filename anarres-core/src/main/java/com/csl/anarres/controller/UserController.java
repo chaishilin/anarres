@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import redis.clients.jedis.Jedis;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -38,8 +37,7 @@ public class UserController {
             JSONObject result = new JSONObject();
             user = userService.login(user);
             String token = userService.generateToken(user);
-            Jedis jedis = RedisUtil.getInstance();
-            jedis.setex(token,(long)60*60,""+user.getUserId());
+            RedisUtil.getInstance().setex(token,(long)60*60,""+user.getUserId());
             result.put("token",token);
             result.put("userId",user.getUserId());
             result.put("username",user.getUsername());
@@ -53,8 +51,7 @@ public class UserController {
     public ResponseTemplate logout(HttpServletRequest request){
         try {
             String token  = request.getHeader("token");
-            Jedis jedis = RedisUtil.getInstance();
-            jedis.del(token);//退出登录就是在后端删除这个token
+            RedisUtil.getInstance().del(token);//退出登录就是在后端删除这个token
             return ResponseUtil.success("","退出登录成功");
         }catch (Exception e){
             return ResponseUtil.fail(e.getMessage());

@@ -1,26 +1,44 @@
 package com.csl.anarres.utils;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.commands.JedisCommands;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 /**
  * @author: Shilin Chai
  * @Date: 2021/10/28 15:13
  * @Description:
  */
-public class RedisUtil {
-    private static Jedis jedis;
-    private RedisUtil(){
 
+public class RedisUtil implements InvocationHandler {
+    private static final JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+    private static final JedisPool jedisPool = new JedisPool(jedisPoolConfig,"127.0.0.1");;
+
+    private RedisUtil(){
+        //只允许getProxyInstance调用
     }
 
-    /**
-     * 单例模式获得redis连接
-     * @return
-     */
-    public synchronized static Jedis getInstance(){
-        if(jedis == null){
-            jedis = new Jedis("http://localhost:6379");
+    public static JedisCommands getInstance(){
+        //创建jedisCommands的接口
+        return (JedisCommands)Proxy.newProxyInstance(JedisCommands.class.getClassLoader(),new Class[]{JedisCommands.class}, new RedisUtil());
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args)
+            throws Throwable{
+        System.out.println("proxy class : "+proxy.getClass().getName());
+        try (Jedis jedis = jedisPool.getResource()){
+            //try-with-resource autoclose jedis resource
+            //参考：https://stackoverflow.com/questions/33400338/java-proxy-for-autocloseable-jedis-resources
+            return method.invoke(jedis,args);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw e;
         }
-        return jedis;
     }
 }
