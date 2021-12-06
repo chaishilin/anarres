@@ -10,7 +10,8 @@ public enum TableIdEnum {
     USER("user","01"),
     PROGRAM("program","02"),
     PROGRAMCODE("programCode","03"),
-    LABEl("label","04");
+    LABEl("label","04"),
+    NUMGENERATOR("numgenerator","05");
 
 
     private String name;
