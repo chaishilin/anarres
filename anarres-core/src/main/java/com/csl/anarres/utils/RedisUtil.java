@@ -31,7 +31,6 @@ public class RedisUtil implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args)
             throws Throwable{
-        System.out.println("proxy class : "+proxy.getClass().getName());
         try (Jedis jedis = jedisPool.getResource()){
             //try-with-resource autoclose jedis resource
             //参考：https://stackoverflow.com/questions/33400338/java-proxy-for-autocloseable-jedis-resources

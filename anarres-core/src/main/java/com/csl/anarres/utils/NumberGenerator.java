@@ -21,7 +21,8 @@ import java.util.Date;
 public class NumberGenerator {
     static final int offset = 3;
     static int generatorCount = 0;
-
+    @Autowired
+    private TableNumGeneratorMapper mapper;
 
     @PostConstruct
     public void scanTable(){
@@ -41,19 +42,8 @@ public class NumberGenerator {
         }
     }
 
-    @Autowired
-    private TableNumGeneratorMapper mapper;
-    public static String getIdFromTableId(TableIdEnum tableId){
-        //todo 多机分布式系统id生成器
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(tableId.getCode());
-        stringBuilder.append(new SimpleDateFormat("yyyyMMdd").format(new Date()));
-        stringBuilder.append(String.format("%05d",RedisUtil.getInstance().incr(stringBuilder.toString())));
-        return stringBuilder.toString();
-    }
 
-    //todo 拿到的count如何存，如何对比自己当前count有没有到，要不要去取，是不是要static map
-    public String getId(TableIdEnum tableId){
+    public String getIdFromTableId(TableIdEnum tableId){
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(tableId.getCode());
         stringBuilder.append(new SimpleDateFormat("yyyyMMdd").format(new Date()));
@@ -73,15 +63,12 @@ public class NumberGenerator {
         }else{
             RedisUtil.getInstance().set("NumGenerator_"+tableId.getName(),""+(count+1));//存入下次要用的count
         }
-        System.out.println(count);
-        return countStr;
+        return stringBuilder.toString();
     }
-
 
 
     @Transactional
     private void getTableNumCount(TableIdEnum tableId, int offset){
-        //System.out.println("getTableNumCount "+tableId.getName());
         TableNumGeneratorEntity entity = mapper.selectById(tableId.getCode());
         assert entity != null;
         int count;

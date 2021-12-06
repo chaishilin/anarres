@@ -18,7 +18,8 @@ import java.util.Random;
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
-
+    @Autowired
+    private NumberGenerator numberGenerator;
     @Override
     public UserEntity register(UserEntity user){
         user.setPassword(HashcodeBuilder.getHashcode(user.getPassword()));
@@ -33,7 +34,7 @@ public class UserServiceImpl implements UserService {
         if(user.getUserState() == null || "".equals(user.getUserState())){
             user.setUserState("01");
         }
-        user.setUserId(NumberGenerator.getIdFromTableId(TableIdEnum.USER));
+        user.setUserId(numberGenerator.getIdFromTableId(TableIdEnum.USER));
         userMapper.insert(user);
         userEntityList = userMapper.selectList(qw);
         assert userEntityList.size() == 1;

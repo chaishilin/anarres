@@ -44,6 +44,8 @@ public class ProgramServiceImpl implements ProgramService {
     private FileUtil fileUtil;
     @Autowired
     private ProgramUtils programUtils;
+    @Autowired
+    private NumberGenerator numberGenerator;
     @Override
     public List<ProgramDto> programList(ProgramEntity entity) {
         List<ProgramDto> programDtos = mapper.findProgramList(entity);//这个是查出来有具体程序的
@@ -135,7 +137,7 @@ public class ProgramServiceImpl implements ProgramService {
         //对发送主键的进行更新，对无主键的进行新增
         if (entity.getProgramId() == null || "".equals(entity.getProgramId())) {
             //无主键
-            entity.setProgramId(NumberGenerator.getIdFromTableId(TableIdEnum.PROGRAM));
+            entity.setProgramId(numberGenerator.getIdFromTableId(TableIdEnum.PROGRAM));
             entity.setCreateTime(new Date());
             mapper.insert(entity);
         } else {
@@ -152,7 +154,7 @@ public class ProgramServiceImpl implements ProgramService {
                 codeEntity.setProgramId(entity.getProgramId());
                 codeEntity.setLanguage(key);
                 codeEntity.setCreaterId(entity.getCreaterId());
-                codeEntity.setProgramCodeId(NumberGenerator.getIdFromTableId(TableIdEnum.PROGRAMCODE));
+                codeEntity.setProgramCodeId(numberGenerator.getIdFromTableId(TableIdEnum.PROGRAMCODE));
                 codeEntity.setCode(value);
                 codeEntity.setCreateTime(new Date());
                 programCodeEntities.add(codeEntity);
