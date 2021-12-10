@@ -41,7 +41,7 @@ public class ProgramController {
     private LoginService loginService;
     Logger logger = LoggerFactory.getLogger(ProgramController.class);
 
-    @IdempotenceRequest(requestMethod = "{userId}programList")
+    @RequestFrequency(value = 5)//对于请求，限制请求频率
     @RequestMapping("/programList")
     public ResponseTemplate programList(@PaserUserState ProgramDto dto, HttpServletRequest request) {
         try {
@@ -73,7 +73,7 @@ public class ProgramController {
         }
     }
 
-    @RequestFrequency(value = 1)//对于请求，限制请求频率
+    @RequestFrequency(value = 2)//对于请求，限制请求频率
     @IdempotenceRequest(requestMethod = "{userId}saveProgram")
     @RemoveCache(requestMethod = "{userId}programList")
     @PostMapping("/saveProgram")//todo 保存程序，定时任务的硬删除程序 都需要针对数据库的变动进行修改
@@ -113,7 +113,7 @@ public class ProgramController {
         }
     }
 
-    @RequestFrequency(value = 1)//对于请求，限制请求频率
+    @RequestFrequency(value = 2)//对于请求，限制请求频率
     @IdempotenceRequest(requestMethod = "{userId}doRemoteProgram")//对于调用服务器资源的操作，需要幂等性接口,防止频繁占用资源
     @PostMapping("/doRemoteProgram")
     public ResponseTemplate doRemoteProgram(@RequestBody ProgramEntity entity, HttpServletRequest request) {

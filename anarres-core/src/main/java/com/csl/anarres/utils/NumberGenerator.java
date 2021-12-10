@@ -19,7 +19,7 @@ import java.util.Date;
  */
 @Component
 public class NumberGenerator {
-    static final int offset = 3;
+    static final int offset = 10;
     static int generatorCount = 0;
     @Autowired
     private TableNumGeneratorMapper mapper;
@@ -54,6 +54,7 @@ public class NumberGenerator {
             countStr = RedisUtil.getInstance().get("NumGenerator_"+tableId.getName());//再次取出这次要用的count
         }
         int count = Integer.parseInt(countStr);
+        countStr = String.format("%05d",count);
         stringBuilder.append(countStr);
         generatorCount += 1;
         if(generatorCount%offset == 0){

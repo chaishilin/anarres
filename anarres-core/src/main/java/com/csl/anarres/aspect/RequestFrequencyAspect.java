@@ -1,10 +1,8 @@
 package com.csl.anarres.aspect;
 
 import com.csl.anarres.annotation.RequestFrequency;
-import com.csl.anarres.utils.HashcodeBuilder;
 import com.csl.anarres.utils.JoinPointUtil;
 import com.csl.anarres.utils.LoginUtil;
-import com.csl.anarres.utils.RedisUtil;
 import com.csl.anarres.utils.ResponseUtil;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -43,14 +41,13 @@ public class RequestFrequencyAspect{
         String methodName = msg.getMethod().getName();
         logger.info(methodName+" 使用注解：RequestFrequency");
         String userId = loginUtil.getCurrentUserOrPublic().getUserId();//利用token获得userEntity
-        String userMethodMD5 = HashcodeBuilder.getHashcode(userId+methodName);
-        int requestFrequencyTime = msg.getMethod().getAnnotation(RequestFrequency.class).value();
-        if(RedisUtil.getInstance().get(userMethodMD5) == null){
-            //如果最近没有请求过
-            return JoinPointUtil.doRequestCacheInKey(joinPoint, userMethodMD5, requestFrequencyTime);//则进行请求
-        }else{
-            //否则报错，避免频繁请求
+        int requestFrequency = msg.getMethod().getAnnotation(RequestFrequency.class).value();
+        Object result = JoinPointUtil.doRequestWithFrenquencyLimit(joinPoint, methodName+userId, requestFrequency);
+        //如果llen的长度等于请求次数，看llen的第一个是不是超过了一秒钟，如果是，那就移除第一个，并且继续请求
+        if(result == null){
+            //报错，避免频繁请求
             return ResponseUtil.fail("不要频繁请求");
         }
+        return result;
     }
 }

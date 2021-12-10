@@ -23,6 +23,18 @@ public class RedisUtil implements InvocationHandler {
         //只允许getProxyInstance调用
     }
 
+    /**
+     * 返回原生jedis对象，需要手动关闭
+     * @return
+     */
+    public static Jedis getConsistentInstance(){
+        return  jedisPool.getResource();
+    }
+
+    /**
+     * 返回可自动关闭的jedis对象
+     * @return
+     */
     public static JedisCommands getInstance(){
         //创建jedisCommands的接口
         return (JedisCommands)Proxy.newProxyInstance(JedisCommands.class.getClassLoader(),new Class[]{JedisCommands.class}, new RedisUtil());
