@@ -16,7 +16,6 @@ import com.csl.anarres.utils.FileUtil;
 import com.csl.anarres.utils.HashcodeBuilder;
 import com.csl.anarres.utils.NumberGenerator;
 import com.csl.anarres.utils.ProgramRunner.ProgramRunnerFactory;
-import com.csl.anarres.utils.ProgramUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,8 +43,6 @@ public class ProgramServiceImpl implements ProgramService {
     private ProgramCodeMapper codeMapper;
     @Autowired
     private FileUtil fileUtil;
-    @Autowired
-    private ProgramUtils programUtils;
     @Autowired
     private NumberGenerator numberGenerator;
     @Autowired
@@ -76,6 +73,7 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public void doProgram(ProgramEntity entity) {
+        entity.setClassName("Solution");//程序的类名统一明明为Solution
         saveProgramToLocal(entity);//临时将程序储存至本地
         runProgram(entity);//在本地运行程序，获得结果
         //fileUtil.deleteProgramFromTargetPath();//删除临时储存的程序
@@ -85,11 +83,11 @@ public class ProgramServiceImpl implements ProgramService {
         if (!SupportLanguage.isInclude(entity.getLanguage())) {
             throw new RuntimeException("不支持的语言类型");
         }
-        programUtils.genarateClassName(entity);
+
         String path = runProgramConfig.getPath();
         path += entity.getClassName() + SupportLanguage.valueOf(entity.getLanguage()).getSuffix();
         try {
-            String codeToSave = programUtils.programWrapper(entity);
+            String codeToSave = programRunnerFactory.getRunner(entity.getLanguage()).programWrapper(entity);
             fileUtil.saveToPath(path, codeToSave);
         } catch (Exception e) {
             e.printStackTrace();
