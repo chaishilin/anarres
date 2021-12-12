@@ -1,4 +1,4 @@
-package com.csl.anarres.utils;
+package com.csl.anarres.utils.CMDUtils;
 
 import com.csl.anarres.enums.OsType;
 import com.csl.anarres.exception.RunProgramException;
@@ -11,10 +11,17 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author: Shilin Chai
  * @Date: 2021/10/31 21:46
- * @Description:
+ * @Description: 对于不同操作系统有不同的具体操作，因此CMDUtils可以作为抽象类，各不同操作系统的CMD命令为子类
+ * 该类为抽象类，不能直接生成对象，避免了直接调用父类的execCMD
  */
-public class CMDUtils {
-    public static String execCMD(String path,String command){
+public abstract class AbstractCMDUtils {
+    /**
+     * 运行命令行指令，该函数与操作系统类型无关
+     * @param path
+     * @param command
+     * @return
+     */
+    public final String execCMD(String path, String command){
         StringBuilder result = new StringBuilder();
         StringBuilder errorResult = new StringBuilder();
         try {
@@ -50,28 +57,33 @@ public class CMDUtils {
         }
     }
 
-    private static Process cmdProcess(String path,String command) throws IOException {
-        Process process = null;
-        if(systemType().equals(OsType.Windows)){
-            command =  "cmd.exe /c " + "cd " + path + "&&" + command;
-            process = Runtime.getRuntime().exec(command);
-        }else{
-            command = "cd " + path + " && " + command;
-            process = Runtime.getRuntime().exec(new String[]{"/bin/sh","-c",command});
-        }
-        return process;
-    }
 
-    public static OsType systemType(){
-        String osName = System.getProperty("os.name");
-        if(osName.contains("win") || osName.contains("Win")){
-            return OsType.Windows;
-        }else if(osName.contains("mac") || osName.contains("Mac")){
-            return OsType.MacOs;
-        }else{
-            return OsType.Linux;
-        }
-    }
+//    /**
+//     * 工厂函数，根据不同的操作系统，返回不同的操作系统CMDUtils子类实例
+//     * @return
+//     */
+//    public static CMDUtils createInstance(){
+//        String osName = System.getProperty("os.name");
+//        if(osName.contains("win") || osName.contains("Win")){
+//            return new WinCMDUtils();
+//        }else{
+//            return new LinuxCMDUtils();
+//        }
+//    }
 
+    /**
+     * 运行命令行的具体指令
+     * 需要子类覆盖
+     * @param path
+     * @param command
+     * @return
+     * @throws IOException
+     */
+    protected abstract Process cmdProcess(String path, String command) throws IOException;
 
+    /**
+     * 获得操作系统类型
+     * @return
+     */
+    public abstract OsType systemType();
 }

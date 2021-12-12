@@ -36,6 +36,7 @@ public class UserController {
         try {
             JSONObject result = new JSONObject();
             user = userService.login(user);
+
             String token = userService.generateToken(user);
             RedisUtil.getInstance().setex(token,(long)60*60,""+user.getUserId());
             result.put("token",token);

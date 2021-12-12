@@ -5,7 +5,7 @@ package com.csl.anarres.enums;
  * @Date: 2021/12/2 9:38
  * @Description:
  */
-public enum  OsType {
+public enum OsType {
     Windows("windows",1),Linux("Linux",2),MacOs("macOS",3);
     private String osName;
     private int code;

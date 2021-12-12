@@ -10,7 +10,7 @@ import com.csl.anarres.enums.TableIdEnum;
 import com.csl.anarres.mapper.ProgramCodeMapper;
 import com.csl.anarres.mapper.ProgramMapper;
 import com.csl.anarres.service.ProgramService;
-import com.csl.anarres.utils.CMDUtils;
+import com.csl.anarres.utils.CMDUtils.CMDUtils;
 import com.csl.anarres.utils.FileUtil;
 import com.csl.anarres.utils.HashcodeBuilder;
 import com.csl.anarres.utils.NumberGenerator;
@@ -46,6 +46,8 @@ public class ProgramServiceImpl implements ProgramService {
     private ProgramUtils programUtils;
     @Autowired
     private NumberGenerator numberGenerator;
+    @Autowired
+    private CMDUtils cmdUtils;
     @Override
     public List<ProgramDto> programList(ProgramEntity entity) {
         List<ProgramDto> programDtos = mapper.findProgramList(entity);//这个是查出来有具体程序的
@@ -99,19 +101,19 @@ public class ProgramServiceImpl implements ProgramService {
             String fileName = entity.getClassName() + SupportLanguage.valueOf(entity.getLanguage()).getSuffix();
             switch (SupportLanguage.valueOf(entity.getLanguage())) {
                 case java:
-                    CMDUtils.execCMD(path,"javac " + fileName);
-                    result = CMDUtils.execCMD(path, "java " + entity.getClassName() + "  " + entity.getInput());
+                    cmdUtils.createInstance().execCMD(path,"javac " + fileName);
+                    result = cmdUtils.createInstance().execCMD(path, "java " + entity.getClassName() + "  " + entity.getInput());
                     break;
                 case golang:
-                    result = CMDUtils.execCMD(path, "go run " + fileName + " " + entity.getInput());
+                    result = cmdUtils.createInstance().execCMD(path, "go run " + fileName + " " + entity.getInput());
                     break;
                 case python:
-                    result = CMDUtils.execCMD(path,"python " + fileName);
+                    result = cmdUtils.createInstance().execCMD(path,"python " + fileName);
                     break;
             }
             entity.setOutput(result);
         } catch (Exception e) {
-            entity.setOutput(e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 
