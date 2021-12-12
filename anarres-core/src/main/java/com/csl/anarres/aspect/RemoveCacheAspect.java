@@ -49,6 +49,7 @@ public class RemoveCacheAspect {
             String userId = loginUtil.getCurrentUserOrPublic().getUserId();
             for(String path : paths){
                 String key = path.replace("{userId}",userId);
+                //todo remove现在只支持hset，不支持删除list，所以删除programlist的时候会报错！
                 Map<String,String> hmap = RedisUtil.getInstance().hgetAll(key);
                 for(String field:hmap.keySet()){
                     RedisUtil.getInstance().hdel(key,field);

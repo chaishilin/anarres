@@ -134,7 +134,13 @@ public class ProgramController {
             } else {
                 result.setResult("程序超时！");
             }
-            return ResponseUtil.success(result);
+            if(entity.isError()){
+                //如果程序报错
+                //todo 红色展示报错信息，总之要返回非200的状态码
+                return ResponseUtil.success(result);
+            }else{
+                return ResponseUtil.success(result);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseUtil.fail(e.getMessage());

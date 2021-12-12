@@ -3,6 +3,7 @@ package com.csl.anarres.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.csl.anarres.config.RunProgramConfig;
 import com.csl.anarres.dto.ProgramDto;
+import com.csl.anarres.dto.ProgramRunnerDto;
 import com.csl.anarres.entity.ProgramCodeEntity;
 import com.csl.anarres.entity.ProgramEntity;
 import com.csl.anarres.enums.SupportLanguage;
@@ -14,6 +15,7 @@ import com.csl.anarres.utils.CMDUtils.CMDUtils;
 import com.csl.anarres.utils.FileUtil;
 import com.csl.anarres.utils.HashcodeBuilder;
 import com.csl.anarres.utils.NumberGenerator;
+import com.csl.anarres.utils.ProgramRunner.ProgramRunnerFactory;
 import com.csl.anarres.utils.ProgramUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +50,8 @@ public class ProgramServiceImpl implements ProgramService {
     private NumberGenerator numberGenerator;
     @Autowired
     private CMDUtils cmdUtils;
+    @Autowired
+    private ProgramRunnerFactory programRunnerFactory;
     @Override
     public List<ProgramDto> programList(ProgramEntity entity) {
         List<ProgramDto> programDtos = mapper.findProgramList(entity);//这个是查出来有具体程序的
@@ -93,29 +97,38 @@ public class ProgramServiceImpl implements ProgramService {
         return "saveProgramToLocal";
     }
 
-
-    public void runProgram(ProgramEntity entity) {
-        String path = runProgramConfig.getPath();
+    /**
+     * 根据运行的操作系统和编程语言，调用不同的命令行参数，运行程序，获得结果
+     * @param entity
+     */
+    private void runProgram(ProgramEntity entity) {
         try {
-            String result = null;
-            String fileName = entity.getClassName() + SupportLanguage.valueOf(entity.getLanguage()).getSuffix();
-            switch (SupportLanguage.valueOf(entity.getLanguage())) {
-                case java:
-                    cmdUtils.createInstance().execCMD(path,"javac " + fileName);
-                    result = cmdUtils.createInstance().execCMD(path, "java " + entity.getClassName() + "  " + entity.getInput());
-                    break;
-                case golang:
-                    result = cmdUtils.createInstance().execCMD(path, "go run " + fileName + " " + entity.getInput());
-                    break;
-                case python:
-                    result = cmdUtils.createInstance().execCMD(path,"python " + fileName);
-                    break;
-            }
+            ProgramRunnerDto programRunnerDto = paserProgramRunnerDto(entity);
+            String result = programRunnerFactory.getRunner(entity.getLanguage()).run(programRunnerDto);
+            entity.setError(false);
             entity.setOutput(result);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            entity.setError(true);
+            entity.setOutput(e.getMessage());
         }
     }
+
+    /**
+     * 根据ProgramEntity抽取表示程序运行相关信息的ProgramRunnerDto
+     * @param entity
+     * @return ProgramRunnerDto
+     */
+    private ProgramRunnerDto paserProgramRunnerDto(ProgramEntity entity) {
+        String path = runProgramConfig.getPath();
+        String fileName = entity.getClassName() + SupportLanguage.valueOf(entity.getLanguage()).getSuffix();
+        ProgramRunnerDto programRunnerDto = new ProgramRunnerDto();
+        programRunnerDto.setClassName(entity.getClassName());
+        programRunnerDto.setFileName(fileName);
+        programRunnerDto.setInput(entity.getInput());
+        programRunnerDto.setPath(path);
+        return programRunnerDto;
+    }
+
 
     @Override
     public void deleteProgram(ProgramDto dto) {
