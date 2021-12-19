@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  * @Description:
  */
 @Component("java")
-public class JavaRunner implements ProgramRunner {
+public class JavaRunner extends ProgramRunner {
     @Autowired
     private CMDUtils cmdUtils;
     @Autowired
@@ -25,7 +25,7 @@ public class JavaRunner implements ProgramRunner {
     private final String java = "java";
     private final String javac = "javac";
     @Override
-    public String run(ProgramRunnerDto dto) {
+    public String runCMD(ProgramRunnerDto dto) {
         cmdUtils.createInstance().execCMD(dto.getPath(),javac +" " + dto.getFileName());
         return cmdUtils.createInstance().execCMD(dto.getPath(), java+" " + dto.getClassName() + "  " + dto.getInput());
     }

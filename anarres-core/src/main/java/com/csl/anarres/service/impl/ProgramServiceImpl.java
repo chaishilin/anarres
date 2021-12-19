@@ -3,10 +3,8 @@ package com.csl.anarres.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.csl.anarres.config.RunProgramConfig;
 import com.csl.anarres.dto.ProgramDto;
-import com.csl.anarres.dto.ProgramRunnerDto;
 import com.csl.anarres.entity.ProgramCodeEntity;
 import com.csl.anarres.entity.ProgramEntity;
-import com.csl.anarres.enums.SupportLanguage;
 import com.csl.anarres.enums.TableIdEnum;
 import com.csl.anarres.mapper.ProgramCodeMapper;
 import com.csl.anarres.mapper.ProgramMapper;
@@ -73,60 +71,8 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public void doProgram(ProgramEntity entity) {
-        entity.setClassName("Solution");//程序的类名统一明明为Solution
-        saveProgramToLocal(entity);//临时将程序储存至本地
-        runProgram(entity);//在本地运行程序，获得结果
-        //fileUtil.deleteProgramFromTargetPath();//删除临时储存的程序
+        programRunnerFactory.getRunner(entity.getLanguage()).run(entity);
     }
-
-    public String saveProgramToLocal(ProgramEntity entity) {
-        if (!SupportLanguage.isInclude(entity.getLanguage())) {
-            throw new RuntimeException("不支持的语言类型");
-        }
-
-        String path = runProgramConfig.getPath();
-        path += entity.getClassName() + SupportLanguage.valueOf(entity.getLanguage()).getSuffix();
-        try {
-            String codeToSave = programRunnerFactory.getRunner(entity.getLanguage()).programWrapper(entity);
-            fileUtil.saveToPath(path, codeToSave);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "saveProgramToLocal";
-    }
-
-    /**
-     * 根据运行的操作系统和编程语言，调用不同的命令行参数，运行程序，获得结果
-     * @param entity
-     */
-    private void runProgram(ProgramEntity entity) {
-        try {
-            ProgramRunnerDto programRunnerDto = paserProgramRunnerDto(entity);
-            String result = programRunnerFactory.getRunner(entity.getLanguage()).run(programRunnerDto);
-            entity.setError(false);
-            entity.setOutput(result);
-        } catch (Exception e) {
-            entity.setError(true);
-            entity.setOutput(e.getMessage());
-        }
-    }
-
-    /**
-     * 根据ProgramEntity抽取表示程序运行相关信息的ProgramRunnerDto
-     * @param entity
-     * @return ProgramRunnerDto
-     */
-    private ProgramRunnerDto paserProgramRunnerDto(ProgramEntity entity) {
-        String path = runProgramConfig.getPath();
-        String fileName = entity.getClassName() + SupportLanguage.valueOf(entity.getLanguage()).getSuffix();
-        ProgramRunnerDto programRunnerDto = new ProgramRunnerDto();
-        programRunnerDto.setClassName(entity.getClassName());
-        programRunnerDto.setFileName(fileName);
-        programRunnerDto.setInput(entity.getInput());
-        programRunnerDto.setPath(path);
-        return programRunnerDto;
-    }
-
 
     @Override
     public void deleteProgram(ProgramDto dto) {

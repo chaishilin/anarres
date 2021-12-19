@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  * @Description:
  */
 @Component("python")
-public class PythonRunner implements ProgramRunner {
+public class PythonRunner extends ProgramRunner {
     @Autowired
     private CMDUtils cmdUtils;
     @Autowired
@@ -25,7 +25,7 @@ public class PythonRunner implements ProgramRunner {
 
     private final String python = "python";
     @Override
-    public String run(ProgramRunnerDto dto) {
+    public String runCMD(ProgramRunnerDto dto) {
         return cmdUtils.createInstance().execCMD(dto.getPath(),python + " " + dto.getFileName());
     }
 

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  * @Description:
  */
 @Component("golang")
-public class GolangRunner implements ProgramRunner {
+public class GolangRunner extends ProgramRunner {
     @Autowired
     private CMDUtils cmdUtils;
     @Autowired
@@ -24,7 +24,7 @@ public class GolangRunner implements ProgramRunner {
 
     private final String command = "go run ";
     @Override
-    public String run(ProgramRunnerDto dto) {
+    public String runCMD(ProgramRunnerDto dto) {
         return cmdUtils.createInstance().execCMD(dto.getPath(), command + dto.getFileName() + " " + dto.getInput());
     }
 
