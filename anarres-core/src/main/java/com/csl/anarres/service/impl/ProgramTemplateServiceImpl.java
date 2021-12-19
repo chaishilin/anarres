@@ -67,14 +67,18 @@ public class ProgramTemplateServiceImpl implements ProgramTemplateService {
 
     @Override
     public String runTemplate(ProgramTemplateEntity entity){
+        //todo 运行程序的时候，从模板数据库中挑选模板
+        //todo 可以进行分离：程序模板和程序语言，因为同一个编程语言可能存在不同的模板。运行程序时需要选择程序语言和对应的模板。
         String code = entity.getCode();
-        ProgramEntity programEntity = programMapper.selectById("022021112400003");
+        //将所有的程序进行测试时，用时很长，如何生成一点数据就返回一点，展示一点，慢慢展示？
+        //todo 一种土方法就是前端重复请求n次，有点土
+        ProgramEntity programEntity = programMapper.selectById("022021121900001");//暂时随便找了一段不需要输入参数的程序
         code = code.replace("{{FunctionBody}}",pythonRunner.getFunctionBody(programEntity));
         code = code.replace("{{FunctionName}}",pythonRunner.getFunctioName(programEntity));
         code = code.replace("{{Parameters}}",pythonRunner.getParameters(programEntity));
-        System.out.println(code);
+        String result = pythonRunner.run(code);
         //programService.doProgram();
-        return code;
+        return result;
     }
 
 }

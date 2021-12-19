@@ -23,19 +23,22 @@ public abstract class ProgramRunner {
      */
     public String run(ProgramEntity entity){
         entity.setClassName("Solution");//程序的类名统一明明为Solution
-        saveProgramToLocal(entity);//临时将程序储存至本地
-        return runProgram(entity);//在本地运行程序，获得结果
+        savePaseredCode(entity);//临时将程序储存至本地
+        return runProgram(entity);//在本地运行程结果
     }
 
     /**
-     * 运行程序,程序模板
+     * 运行输入的代码
+     * @param code
      * @return
      */
-    public String run(String code,String language){
+    public String run(String code){
         ProgramEntity entity = new ProgramEntity();
+        entity.setClassName("Solution");//程序的类名统一明明为Solution
         entity.setCode(code);
-        entity.setLanguage(language);
-        return run(entity);
+        entity.setLanguage(getLanguage());
+        saveCode(entity);
+        return runProgram(entity);
     }
 
     /**
@@ -56,21 +59,40 @@ public abstract class ProgramRunner {
     }
 
     /**
-     * 将要运行的程序保存至本地
+     * 将要运行的程序经过模板解析后，保存至本地
      * @param entity
      */
-    private void saveProgramToLocal(ProgramEntity entity) {
-        if (!SupportLanguage.isInclude(entity.getLanguage())) {
-            throw new RuntimeException("不支持的语言类型");
-        }
-        String path = runProgramConfig.getPath();
-        path += entity.getClassName() + SupportLanguage.valueOf(entity.getLanguage()).getSuffix();
+    private void savePaseredCode(ProgramEntity entity) {
+        String path = getSavePath(entity);
         try {
-            String codeToSave = programWrapper(entity);
-            fileUtil.saveToPath(path, codeToSave);
+            fileUtil.saveToPath(path, programWrapper(entity));
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 将要运行的程序直接保存至本地
+     * @param entity
+     */
+    private void saveCode(ProgramEntity entity) {
+        String path = getSavePath(entity);
+        try {
+            fileUtil.saveToPath(path, entity.getCode());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 获得保存路径
+     * @param entity
+     * @return
+     */
+    private String getSavePath(ProgramEntity entity) {
+        String path = runProgramConfig.getPath();
+        path += entity.getClassName() + SupportLanguage.valueOf(entity.getLanguage()).getSuffix();
+        return path;
     }
 
     /**
@@ -102,4 +124,10 @@ public abstract class ProgramRunner {
      * @return
      */
     public abstract String programWrapper(ProgramEntity entity);
+
+    /**
+     * 获得编程语言名称
+     * @return
+     */
+    public abstract String getLanguage();
 }

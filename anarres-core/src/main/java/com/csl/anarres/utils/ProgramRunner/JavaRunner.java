@@ -39,4 +39,9 @@ public class JavaRunner extends ProgramRunner {
         StringBuilder sEnd = fileUtil.readFromClasspath(relativePath + "\\" + "SolutionEnd.java");
         return sStart.append(code).append(sEnd).toString();
     }
+
+    @Override
+    public String getLanguage() {
+        return "java";
+    }
 }

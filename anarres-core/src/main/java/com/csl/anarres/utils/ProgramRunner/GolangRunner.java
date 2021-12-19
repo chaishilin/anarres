@@ -51,4 +51,9 @@ public class GolangRunner extends ProgramRunner {
 
         return goTemplateString;
     }
+
+    @Override
+    public String getLanguage() {
+        return "golang";
+    }
 }

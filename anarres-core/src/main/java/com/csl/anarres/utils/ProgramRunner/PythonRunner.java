@@ -24,6 +24,7 @@ public class PythonRunner extends ProgramRunner {
     private FileUtil fileUtil;
 
     private final String python = "python";
+
     @Override
     public String runCMD(ProgramRunnerDto dto) {
         return cmdUtils.createInstance().execCMD(dto.getPath(),python + " " + dto.getFileName());
@@ -48,6 +49,11 @@ public class PythonRunner extends ProgramRunner {
         runDefStr.append(")");
         runDefStr.append("\n");
         return pythonTemplate.toString().replace("inputYourFunction",runDefStr.toString());
+    }
+
+    @Override
+    public String getLanguage() {
+        return "python";
     }
 
     public String getFunctionBody(ProgramInterface entity){
