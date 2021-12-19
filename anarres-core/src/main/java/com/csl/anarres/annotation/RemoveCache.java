@@ -14,8 +14,8 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RemoveCache {
-    /*
-      可以清除多个redis中的路径,分号分隔,example:programList;userList
-    */
-    String requestMethod() ;
+    //所需要清除的字段名字,支持多个字段，用;分割
+    String requestMethod();
+    //所需清楚的字段类型：list、hset
+    String redisType();
 }

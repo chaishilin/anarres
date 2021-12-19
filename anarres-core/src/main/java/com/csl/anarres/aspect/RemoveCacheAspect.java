@@ -14,8 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-
 /**
  * @author: Shilin Chai
  * @Date: 2021/11/24 10:07
@@ -40,6 +38,7 @@ public class RemoveCacheAspect {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         RemoveCache annotation = signature.getMethod().getAnnotation(RemoveCache.class);
         String requestMethod = annotation.requestMethod();
+        String redisType = annotation.redisType();
         if("".equals(requestMethod)){
             logger.warn("无缓存清除地址");
             return result;
@@ -49,16 +48,12 @@ public class RemoveCacheAspect {
             String userId = loginUtil.getCurrentUserOrPublic().getUserId();
             for(String path : paths){
                 String key = path.replace("{userId}",userId);
-                //todo remove现在只支持hset，不支持删除list，所以删除programlist的时候会报错！
-                Map<String,String> hmap = RedisUtil.getInstance().hgetAll(key);
-                for(String field:hmap.keySet()){
-                    RedisUtil.getInstance().hdel(key,field);
-                }
+                RedisUtil.getInstance().del(key);
                 logger.info("成功删除缓存"+userId+":"+path);
             }
             return result;
         }catch (Exception e){
-            logger.warn("无效的path地址:"+requestMethod);
+            logger.warn("清除缓存失败，字段名:"+requestMethod+" 字段类型："+redisType+"错误信息："+e.getMessage());
             return result;
         }
 

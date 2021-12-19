@@ -4,13 +4,13 @@
 <mapper namespace="com.csl.anarres.mapper.UserMapper">
     <resultMap id="userMap" type="com.csl.anarres.entity.UserEntity">
         <id column="U_ID" property="userId"></id>
-        <id column="U_NAME" property="username"></id>
-        <id column="U_PASSWORD" property="password"></id>
-        <id column="CREATE_TIME" property="createTime"></id>
-        <id column="LAST_MODIFIED_TIME" property="lastModifiedTime"></id>
-        <id column="U_PHONE" property="userPhone"></id>
-        <id column="U_EMAIL" property="userEmail"></id>
-        <id column="U_STATE" property="userState"></id>
+        <result column="U_NAME" property="username"></result>
+        <result column="U_PASSWORD" property="password"></result>
+        <result column="CREATE_TIME" property="createTime"></result>
+        <result column="LAST_MODIFIED_TIME" property="lastModifiedTime"></result>
+        <result column="U_PHONE" property="userPhone"></result>
+        <result column="U_EMAIL" property="userEmail"></result>
+        <result column="U_STATE" property="userState"></result>
     </resultMap>
     <sql id="userColumnAll">
         U_ID,U_NAME,U_PHONE,U_EMAIL,U_STATE

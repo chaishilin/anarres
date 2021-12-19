@@ -30,7 +30,6 @@ public class PythonRunner implements ProgramRunner {
 
     @Override
     public String programWrapper(ProgramEntity entity) {
-        //todo 自助注册支持的语言是否可行？
         String relativePath = runProgramConfig.getRelativePath();
         String code = entity.getCode();
         StringBuilder pythonTemplate = new StringBuilder();

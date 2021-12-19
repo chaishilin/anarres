@@ -75,7 +75,7 @@ public class ProgramController {
 
     @RequestFrequency(value = 2)//对于请求，限制请求频率
     @IdempotenceRequest(requestMethod = "{userId}saveProgram")
-    @RemoveCache(requestMethod = "{userId}programList")
+    @RemoveCache(requestMethod = "{userId}programList",redisType = "list")
     @PostMapping("/saveProgram")//todo 保存程序，定时任务的硬删除程序 都需要针对数据库的变动进行修改
     public ResponseTemplate saveProgram(@PaserUserState ProgramDto dto, HttpServletRequest request) {
         try {
@@ -96,7 +96,7 @@ public class ProgramController {
     }
 
     @PostMapping("/deleteProgram")
-    @RemoveCache(requestMethod = "{userId}programList")
+    @RemoveCache(requestMethod = "{userId}programList",redisType = "list")
     public ResponseTemplate deleteProgram(@PaserUserState ProgramDto dto, HttpServletRequest request) {
         try {
             if (!dto.isLogin()) {

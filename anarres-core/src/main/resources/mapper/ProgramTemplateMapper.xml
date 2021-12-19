@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.csl.anarres.mapper.ProgramTemplateMapper">
+    <resultMap id="templateMap" type="com.csl.anarres.entity.ProgramTemplateEntity">
+        <id column="T_ID" property="templateId"></id>
+        <result column="CODE" property="code"></result>
+        <result column="LANGUAGE" property="language"></result>
+        <result column="PUBLIC_STATE" property="publicState"></result>
+        <result column="TITLE" property="title"></result>
+        <result column="CONTENT" property="content"></result>
+        <result column="STATE" property="state"></result>
+        <result column="CREATER_ID" property="createrId"></result>
+        <result column="CREATE_TIME" property="createTime"></result>
+        <result column="LAST_MODIFIED_TIME" property="lastModifiedTime"></result>
+    </resultMap>
+    <sql id="TemplateColumnAll">
+        T_ID,CODE,LANGUAGE,PUBLIC_STATE,CONTENT,STATE,CREATER_ID,CREATE_TIME,LAST_MODIFIED_TIME,TITLE
+    </sql>
+    <select id="findProgramTemplateList" resultMap="templateMap">
+        select
+        <include refid="TemplateColumnAll"/>
+        from programTemplate pt
+        <where>
+            <if test="query.state != null and query.state != ''">
+                and pt.STATE = #{query.state}
+            </if>
+        </where>
+    </select>
+</mapper>

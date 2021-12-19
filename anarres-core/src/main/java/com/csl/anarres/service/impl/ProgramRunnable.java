@@ -11,6 +11,12 @@ import com.csl.anarres.service.ProgramService;
 public class ProgramRunnable implements Runnable {
     private ProgramEntity entity;
     private ProgramService programService;
+
+    /**
+     * 构造函数传参，因为ProgramRunnable是new出来的，@Autowired是失效的
+     * @param entity
+     * @param programService
+     */
     public ProgramRunnable(ProgramEntity entity,ProgramService programService){
         this.entity = entity;
         this.programService = programService;
