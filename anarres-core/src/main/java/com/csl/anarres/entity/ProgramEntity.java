@@ -15,7 +15,7 @@ import java.util.Date;
  */
 @Data
 @TableName("program")
-public class ProgramEntity implements Comparable<ProgramEntity>{
+public class ProgramEntity implements Comparable<ProgramEntity>,ProgramInterface{
     //程序id
     @TableId(value = "P_ID",type = IdType.INPUT)
     private String programId;

@@ -26,9 +26,16 @@ public interface ProgramTemplateService {
 
     /**
      * 删除
-     * @param teamplateId
+     * @param entity
      * @return
      */
-    String softDelete(ProgramTemplateEntity teamplateId);
+    String softDelete(ProgramTemplateEntity entity);
+
+    /**
+     * 模板测试
+     * @param entity
+     * @return
+     */
+    String runTemplate(ProgramTemplateEntity entity);
 
 }

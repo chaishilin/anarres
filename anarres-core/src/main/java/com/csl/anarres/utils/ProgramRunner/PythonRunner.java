@@ -3,6 +3,7 @@ package com.csl.anarres.utils.ProgramRunner;
 import com.csl.anarres.config.RunProgramConfig;
 import com.csl.anarres.dto.ProgramRunnerDto;
 import com.csl.anarres.entity.ProgramEntity;
+import com.csl.anarres.entity.ProgramInterface;
 import com.csl.anarres.utils.CMDUtils.CMDUtils;
 import com.csl.anarres.utils.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,4 +49,21 @@ public class PythonRunner implements ProgramRunner {
         runDefStr.append("\n");
         return pythonTemplate.toString().replace("inputYourFunction",runDefStr.toString());
     }
+
+    public String getFunctionBody(ProgramInterface entity){
+        return entity.getCode();
+    }
+
+    public String getFunctioName(ProgramInterface entity){
+        return entity.getCode().split("\\(")[0].replace("def ","");
+    }
+
+    public String getParameters(ProgramInterface entity){
+        if(entity.getInput() != null && !"".equals(entity.getInput())){
+            return entity.getInput().replace(" ",",");
+        }
+        return "";
+    }
+
+
 }

@@ -54,4 +54,15 @@ public class ProgramTemplateController {
         }
     }
 
+    @RequestMapping("runTemplate")
+    public ResponseTemplate runTemplate(@RequestBody ProgramTemplateEntity entity, HttpServletRequest request) {
+        try {
+            String result = service.runTemplate(entity);
+            return ResponseUtil.success("程序模板列表测试成功", result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseUtil.fail("程序模板列表测试失败" + e.getMessage());
+        }
+    }
+
 }

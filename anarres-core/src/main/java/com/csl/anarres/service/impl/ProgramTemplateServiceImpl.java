@@ -1,10 +1,14 @@
 package com.csl.anarres.service.impl;
 
+import com.csl.anarres.entity.ProgramEntity;
 import com.csl.anarres.entity.ProgramTemplateEntity;
 import com.csl.anarres.enums.TableIdEnum;
+import com.csl.anarres.mapper.ProgramMapper;
 import com.csl.anarres.mapper.ProgramTemplateMapper;
+import com.csl.anarres.service.ProgramService;
 import com.csl.anarres.service.ProgramTemplateService;
 import com.csl.anarres.utils.NumberGenerator;
+import com.csl.anarres.utils.ProgramRunner.PythonRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +26,12 @@ public class ProgramTemplateServiceImpl implements ProgramTemplateService {
     private ProgramTemplateMapper mapper;
     @Autowired
     private NumberGenerator numberGenerator;
+    @Autowired
+    private PythonRunner pythonRunner;
+    @Autowired
+    private ProgramMapper programMapper;
+    @Autowired
+    private ProgramService programService;
 
     @Override
     public List<ProgramTemplateEntity> select(ProgramTemplateEntity entity) {
@@ -54,4 +64,17 @@ public class ProgramTemplateServiceImpl implements ProgramTemplateService {
         mapper.updateById(entity);
         return entity.getTemplateId();
     }
+
+    @Override
+    public String runTemplate(ProgramTemplateEntity entity){
+        String code = entity.getCode();
+        ProgramEntity programEntity = programMapper.selectById("022021112400003");
+        code = code.replace("{{FunctionBody}}",pythonRunner.getFunctionBody(programEntity));
+        code = code.replace("{{FunctionName}}",pythonRunner.getFunctioName(programEntity));
+        code = code.replace("{{Parameters}}",pythonRunner.getParameters(programEntity));
+        System.out.println(code);
+        //programService.doProgram();
+        return code;
+    }
+
 }
