@@ -73,7 +73,7 @@ public class ProgramTemplateServiceImpl implements ProgramTemplateService {
         String template = entity.getTemplate();
         //将所有的程序进行测试时，用时很长，如何生成一点数据就返回一点，展示一点，慢慢展示？
         //todo 一种土方法就是前端重复请求n次，有点土
-        String language = "golang";
+        String language = "java";
         ProgramRunner runner = runnerFactory.getRunner(language);
         ProgramEntity programEntity = programMapper.selectById("022021121900001");//暂时随便找了一段不需要输入参数的程序
         String result = runner.run(runner.programWrapper(programEntity));

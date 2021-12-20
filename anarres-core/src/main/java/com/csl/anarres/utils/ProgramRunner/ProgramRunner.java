@@ -124,7 +124,19 @@ public abstract class ProgramRunner {
      * @param entity
      * @return
      */
-    public abstract String programWrapper(ProgramInterface entity);
+    public String programWrapper(ProgramInterface entity){
+        String template = chooseTemplate();
+        template = template.replace("{{FunctionBody}}",getFunctionBody(entity));
+        template = template.replace("{{FunctionName}}",getFunctionName(entity));
+        template = template.replace("{{Parameters}}",getParameters(entity));
+        return template;
+    }
+
+    /**
+     * 选择程序模板
+     * @return
+     */
+    protected abstract String chooseTemplate();
 
     /**
      * 获得编程语言名称
