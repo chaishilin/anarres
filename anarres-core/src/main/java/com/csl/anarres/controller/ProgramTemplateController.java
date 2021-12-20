@@ -2,9 +2,12 @@ package com.csl.anarres.controller;
 
 import com.csl.anarres.entity.ProgramTemplateEntity;
 import com.csl.anarres.service.ProgramTemplateService;
+import com.csl.anarres.service.impl.ProgramTemplateRunnable;
 import com.csl.anarres.utils.ResponseTemplate;
 import com.csl.anarres.utils.ResponseUtil;
+import com.csl.anarres.websocket.TestTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +25,8 @@ import java.util.List;
 public class ProgramTemplateController {
     @Autowired
     private ProgramTemplateService service;
+    @Autowired
+    private TestTemplate testTemplate;
     @RequestMapping("/list")
     public ResponseTemplate programTemplateList(@RequestBody ProgramTemplateEntity entity, HttpServletRequest request) {
         try {
@@ -64,5 +69,24 @@ public class ProgramTemplateController {
             return ResponseUtil.fail("程序模板列表测试失败" + e.getMessage());
         }
     }
+
+
+    @PostMapping("testTemplate")
+    public ResponseTemplate doTest(@RequestBody ProgramTemplateEntity entity, HttpServletRequest request){
+        try {
+            //step 1 开启异步任务
+            // step 1.1 运行异步任务
+            // step 1.2 每运行一个，向ws中更新信息
+            //step 2 返回成功
+            Thread templateTest = new Thread(new ProgramTemplateRunnable(testTemplate));
+            //异步启动线程
+            templateTest.start();
+            return ResponseUtil.success("ok");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseUtil.fail("发送失败" + e.getMessage());
+        }
+    }
+
 
 }
