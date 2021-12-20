@@ -22,8 +22,8 @@ public class ProgramTemplateEntity extends RecordEntity{
     @TableId(value = "T_ID",type = IdType.INPUT)
     private String templateId;
     //代码模板
-    @TableField("CODE")
-    private String code;
+    @TableField("TEMPLATE")
+    private String template;
     //代码模板语言
     @TableField("LANGUAGE")
     private String language;

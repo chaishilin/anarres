@@ -5,7 +5,7 @@
 <mapper namespace="com.csl.anarres.mapper.ProgramTemplateMapper">
     <resultMap id="templateMap" type="com.csl.anarres.entity.ProgramTemplateEntity">
         <id column="T_ID" property="templateId"></id>
-        <result column="CODE" property="code"></result>
+        <result column="TEMPLATE" property="template"></result>
         <result column="LANGUAGE" property="language"></result>
         <result column="PUBLIC_STATE" property="publicState"></result>
         <result column="TITLE" property="title"></result>
@@ -16,7 +16,7 @@
         <result column="LAST_MODIFIED_TIME" property="lastModifiedTime"></result>
     </resultMap>
     <sql id="TemplateColumnAll">
-        T_ID,CODE,LANGUAGE,PUBLIC_STATE,CONTENT,STATE,CREATER_ID,CREATE_TIME,LAST_MODIFIED_TIME,TITLE
+        T_ID,TEMPLATE,LANGUAGE,PUBLIC_STATE,CONTENT,STATE,CREATER_ID,CREATE_TIME,LAST_MODIFIED_TIME,TITLE
     </sql>
     <select id="findProgramTemplateList" resultMap="templateMap">
         select
@@ -25,6 +25,9 @@
         <where>
             <if test="query.state != null and query.state != ''">
                 and pt.STATE = #{query.state}
+            </if>
+            <if test="query.templateId != null and query.templateId != ''">
+                and pt.T_ID = #{query.templateId}
             </if>
         </where>
     </select>

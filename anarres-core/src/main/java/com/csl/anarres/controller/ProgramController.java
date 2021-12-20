@@ -114,14 +114,14 @@ public class ProgramController {
     }
 
     @RequestFrequency(value = 2)//对于请求，限制请求频率
-    @IdempotenceRequest(requestMethod = "{userId}doRemoteProgram")//对于调用服务器资源的操作，需要幂等性接口,防止频繁占用资源
+    //@IdempotenceRequest(requestMethod = "{userId}doRemoteProgram")//对于调用服务器资源的操作，需要幂等性接口,防止频繁占用资源
     @PostMapping("/doRemoteProgram")
-    public ResponseTemplate doRemoteProgram(@RequestBody ProgramEntity entity, HttpServletRequest request) {
+    public ResponseTemplate doRemoteProgram(@RequestBody ProgramDto programDto, HttpServletRequest request) {
         try {
-            Thread t = new Thread(new ProgramRunnable(entity, programService));
+            Thread t = new Thread(new ProgramRunnable(programDto, programService));
             t.start();
             long now = System.currentTimeMillis();
-            while (!entity.isReadable()) {
+            while (!programDto.isReadable()) {
                 Thread.sleep(50);
                 if (System.currentTimeMillis() - now > runProgramConfig.getTimeout()) {
                     t.interrupt();
@@ -129,12 +129,12 @@ public class ProgramController {
                 }
             }
             ProgramDto result = new ProgramDto();
-            if (entity.isReadable()) {
-                result.setResult(entity.getOutput());
+            if (programDto.isReadable()) {
+                result.setResult(programDto.getOutput());
             } else {
                 result.setResult("程序超时！");
             }
-            if(entity.isError()){
+            if(programDto.isError()){
                 //如果程序报错
                 //todo 红色展示报错信息，总之要返回非200的状态码
                 return ResponseUtil.success(result);

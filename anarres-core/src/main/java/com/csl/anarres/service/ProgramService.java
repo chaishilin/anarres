@@ -15,10 +15,10 @@ public interface ProgramService {
     List<ProgramDto> programList(ProgramEntity entity);
     /**
      * 运行程序，返回结果，可以考虑采用模板方法来制作，doProgram为实际方法
-     * @param entity
+     * @param dto
      * @return
      */
-    void doProgram(ProgramEntity entity);
+    void doProgram(ProgramDto dto);
 
     /**
      * 存入数据库，生成程序的md5签名，作者，程序内容

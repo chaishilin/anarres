@@ -1,8 +1,9 @@
 package com.csl.anarres.utils.ProgramRunner;
 
 import com.csl.anarres.config.RunProgramConfig;
+import com.csl.anarres.dto.ProgramDto;
 import com.csl.anarres.dto.ProgramRunnerDto;
-import com.csl.anarres.entity.ProgramEntity;
+import com.csl.anarres.entity.ProgramInterface;
 import com.csl.anarres.enums.SupportLanguage;
 import com.csl.anarres.utils.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +22,10 @@ public abstract class ProgramRunner {
      * 运行程序,程序模板
      * @return
      */
-    public String run(ProgramEntity entity){
-        entity.setClassName("Solution");//程序的类名统一明明为Solution
-        savePaseredCode(entity);//临时将程序储存至本地
-        return runProgram(entity);//在本地运行程结果
+    public String run(ProgramDto dto){
+        dto.setClassName("Solution");//程序的类名统一明明为Solution
+        savePaseredCode(dto);//临时将程序储存至本地
+        return runProgram(dto);//在本地运行程结果
     }
 
     /**
@@ -33,39 +34,39 @@ public abstract class ProgramRunner {
      * @return
      */
     public String run(String code){
-        ProgramEntity entity = new ProgramEntity();
-        entity.setClassName("Solution");//程序的类名统一明明为Solution
-        entity.setCode(code);
-        entity.setLanguage(getLanguage());
-        saveCode(entity);
-        return runProgram(entity);
+        ProgramDto dto = new ProgramDto();
+        dto.setClassName("Solution");//程序的类名统一明明为Solution
+        dto.setCode(code);
+        dto.setLanguage(getLanguage());
+        saveCode(dto);
+        return runProgram(dto);
     }
 
     /**
      * 根据运行的操作系统和编程语言，调用不同的命令行参数，运行程序，获得结果
-     * @param entity
+     * @param dto
      */
-    private String runProgram(ProgramEntity entity) {
+    private String runProgram(ProgramDto dto) {
         try {
-            ProgramRunnerDto programRunnerDto = paserProgramRunnerDto(entity);
+            ProgramRunnerDto programRunnerDto = paserProgramRunnerDto(dto);
             String result = runCMD(programRunnerDto);
-            entity.setError(false);
-            entity.setOutput(result);
+            dto.setError(false);
+            dto.setOutput(result);
         } catch (Exception e) {
-            entity.setError(true);
-            entity.setOutput(e.getMessage());
+            dto.setError(true);
+            dto.setOutput(e.getMessage());
         }
-        return entity.getOutput();
+        return dto.getOutput();
     }
 
     /**
      * 将要运行的程序经过模板解析后，保存至本地
-     * @param entity
+     * @param dto
      */
-    private void savePaseredCode(ProgramEntity entity) {
-        String path = getSavePath(entity);
+    private void savePaseredCode(ProgramDto dto) {
+        String path = getSavePath(dto);
         try {
-            fileUtil.saveToPath(path, programWrapper(entity));
+            fileUtil.saveToPath(path, programWrapper(dto));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -73,12 +74,12 @@ public abstract class ProgramRunner {
 
     /**
      * 将要运行的程序直接保存至本地
-     * @param entity
+     * @param dto
      */
-    private void saveCode(ProgramEntity entity) {
-        String path = getSavePath(entity);
+    private void saveCode(ProgramDto dto) {
+        String path = getSavePath(dto);
         try {
-            fileUtil.saveToPath(path, entity.getCode());
+            fileUtil.saveToPath(path, dto.getCode());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -86,27 +87,27 @@ public abstract class ProgramRunner {
 
     /**
      * 获得保存路径
-     * @param entity
+     * @param dto
      * @return
      */
-    private String getSavePath(ProgramEntity entity) {
+    private String getSavePath(ProgramDto dto) {
         String path = runProgramConfig.getPath();
-        path += entity.getClassName() + SupportLanguage.valueOf(entity.getLanguage()).getSuffix();
+        path += dto.getClassName() + SupportLanguage.valueOf(dto.getLanguage()).getSuffix();
         return path;
     }
 
     /**
      * 根据ProgramEntity抽取表示程序运行相关信息的ProgramRunnerDto
-     * @param entity
+     * @param dto
      * @return ProgramRunnerDto
      */
-    private ProgramRunnerDto paserProgramRunnerDto(ProgramEntity entity) {
+    private ProgramRunnerDto paserProgramRunnerDto(ProgramDto dto) {
         String path = runProgramConfig.getPath();
-        String fileName = entity.getClassName() + SupportLanguage.valueOf(entity.getLanguage()).getSuffix();
+        String fileName = dto.getClassName() + SupportLanguage.valueOf(dto.getLanguage()).getSuffix();
         ProgramRunnerDto programRunnerDto = new ProgramRunnerDto();
-        programRunnerDto.setClassName(entity.getClassName());
+        programRunnerDto.setClassName(dto.getClassName());
         programRunnerDto.setFileName(fileName);
-        programRunnerDto.setInput(entity.getInput());
+        programRunnerDto.setInput(dto.getInput());
         programRunnerDto.setPath(path);
         return programRunnerDto;
     }
@@ -123,11 +124,39 @@ public abstract class ProgramRunner {
      * @param entity
      * @return
      */
-    public abstract String programWrapper(ProgramEntity entity);
+    public abstract String programWrapper(ProgramInterface entity);
 
     /**
      * 获得编程语言名称
      * @return
      */
     public abstract String getLanguage();
+
+    /**
+     * 获得函数体
+     * @param entity
+     * @return
+     */
+    public String getFunctionBody(ProgramInterface entity){
+        return entity.getCode();
+    }
+
+    /**
+     * 获得函数名称
+     * @param entity
+     * @return
+     */
+    public abstract String getFunctionName(ProgramInterface entity);
+
+    /**
+     * 获得函数参数
+     * @param entity
+     * @return
+     */
+    public String getParameters(ProgramInterface entity){
+        if(entity.getInput() != null && !"".equals(entity.getInput())){
+            return entity.getInput().replace(" ",",");
+        }
+        return "";
+    }
 }

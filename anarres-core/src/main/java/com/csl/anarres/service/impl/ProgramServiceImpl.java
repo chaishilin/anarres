@@ -70,8 +70,8 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public void doProgram(ProgramEntity entity) {
-        programRunnerFactory.getRunner(entity.getLanguage()).run(entity);
+    public void doProgram(ProgramDto dto) {
+        programRunnerFactory.getRunner(dto.getLanguage()).run(dto);
     }
 
     @Override

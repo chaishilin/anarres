@@ -56,21 +56,6 @@ public abstract class AbstractCMDUtils {
             throw new RunProgramException(e.getMessage());
         }
     }
-
-
-//    /**
-//     * 工厂函数，根据不同的操作系统，返回不同的操作系统CMDUtils子类实例
-//     * @return
-//     */
-//    public static CMDUtils createInstance(){
-//        String osName = System.getProperty("os.name");
-//        if(osName.contains("win") || osName.contains("Win")){
-//            return new WinCMDUtils();
-//        }else{
-//            return new LinuxCMDUtils();
-//        }
-//    }
-
     /**
      * 运行命令行的具体指令
      * 需要子类覆盖

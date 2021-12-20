@@ -1,6 +1,6 @@
 package com.csl.anarres.service.impl;
 
-import com.csl.anarres.entity.ProgramEntity;
+import com.csl.anarres.dto.ProgramDto;
 import com.csl.anarres.service.ProgramService;
 
 /**
@@ -9,22 +9,22 @@ import com.csl.anarres.service.ProgramService;
  * @Description:
  */
 public class ProgramRunnable implements Runnable {
-    private ProgramEntity entity;
+    private ProgramDto dto;
     private ProgramService programService;
 
     /**
      * 构造函数传参，因为ProgramRunnable是new出来的，@Autowired是失效的
-     * @param entity
+     * @param dto
      * @param programService
      */
-    public ProgramRunnable(ProgramEntity entity,ProgramService programService){
-        this.entity = entity;
+    public ProgramRunnable(ProgramDto dto, ProgramService programService){
+        this.dto = dto;
         this.programService = programService;
     }
     @Override
     public void run() {
         System.out.println("create new thread to run program");
-        programService.doProgram(this.entity);
-        this.entity.setReadable(true);
+        programService.doProgram(this.dto);
+        this.dto.setReadable(true);
     }
 }

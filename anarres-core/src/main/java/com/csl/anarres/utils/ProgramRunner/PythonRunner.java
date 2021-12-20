@@ -2,8 +2,9 @@ package com.csl.anarres.utils.ProgramRunner;
 
 import com.csl.anarres.config.RunProgramConfig;
 import com.csl.anarres.dto.ProgramRunnerDto;
-import com.csl.anarres.entity.ProgramEntity;
 import com.csl.anarres.entity.ProgramInterface;
+import com.csl.anarres.entity.ProgramTemplateEntity;
+import com.csl.anarres.mapper.ProgramTemplateMapper;
 import com.csl.anarres.utils.CMDUtils.CMDUtils;
 import com.csl.anarres.utils.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ public class PythonRunner extends ProgramRunner {
     private RunProgramConfig runProgramConfig;
     @Autowired
     private FileUtil fileUtil;
+    @Autowired
+    private ProgramTemplateMapper templateMapper;
 
     private final String python = "python";
 
@@ -31,24 +34,14 @@ public class PythonRunner extends ProgramRunner {
     }
 
     @Override
-    public String programWrapper(ProgramEntity entity) {
-        String relativePath = runProgramConfig.getRelativePath();
-        String code = entity.getCode();
-        StringBuilder pythonTemplate = new StringBuilder();
-        pythonTemplate.append(code);
-        pythonTemplate.append("\n");
-        pythonTemplate.append(fileUtil.readFromClasspath(relativePath + "\\" + "Solution.py"));
-        String defName = code.split("\\(")[0].replace("def ","");
-        StringBuilder runDefStr = new StringBuilder();
-        //组成调用函数的那一行
-        runDefStr.append(defName);
-        runDefStr.append("(");
-        if(entity.getInput() != null && !"".equals(entity.getInput())){
-            runDefStr.append(entity.getInput().replace(" ",","));
-        }
-        runDefStr.append(")");
-        runDefStr.append("\n");
-        return pythonTemplate.toString().replace("inputYourFunction",runDefStr.toString());
+    public String programWrapper(ProgramInterface entity) {
+        //        ProgramTemplateEntity templateEntity = templateMapper.selectById(dto.getTemplateId());
+        ProgramTemplateEntity templateEntity = templateMapper.selectById("062021121900025");
+        String template = templateEntity.getTemplate();
+        template = template.replace("{{FunctionBody}}",getFunctionBody(entity));
+        template = template.replace("{{FunctionName}}",getFunctionName(entity));
+        template = template.replace("{{Parameters}}",getParameters(entity));
+        return template;
     }
 
     @Override
@@ -56,20 +49,9 @@ public class PythonRunner extends ProgramRunner {
         return "python";
     }
 
-    public String getFunctionBody(ProgramInterface entity){
-        return entity.getCode();
-    }
-
-    public String getFunctioName(ProgramInterface entity){
+    @Override
+    public String getFunctionName(ProgramInterface entity){
         return entity.getCode().split("\\(")[0].replace("def ","");
     }
-
-    public String getParameters(ProgramInterface entity){
-        if(entity.getInput() != null && !"".equals(entity.getInput())){
-            return entity.getInput().replace(" ",",");
-        }
-        return "";
-    }
-
 
 }

@@ -1,8 +1,11 @@
 package com.csl.anarres.utils.ProgramRunner;
 
 import com.csl.anarres.config.RunProgramConfig;
+import com.csl.anarres.dto.ProgramDto;
 import com.csl.anarres.dto.ProgramRunnerDto;
-import com.csl.anarres.entity.ProgramEntity;
+import com.csl.anarres.entity.ProgramInterface;
+import com.csl.anarres.entity.ProgramTemplateEntity;
+import com.csl.anarres.mapper.ProgramTemplateMapper;
 import com.csl.anarres.utils.CMDUtils.CMDUtils;
 import com.csl.anarres.utils.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,17 +24,33 @@ public class GolangRunner extends ProgramRunner {
     private RunProgramConfig runProgramConfig;
     @Autowired
     private FileUtil fileUtil;
+    @Autowired
+    private ProgramTemplateMapper templateMapper;
 
     private final String command = "go run ";
     @Override
     public String runCMD(ProgramRunnerDto dto) {
-        return cmdUtils.createInstance().execCMD(dto.getPath(), command + dto.getFileName() + " " + dto.getInput());
+        if(dto.getInput() == null){
+            return cmdUtils.createInstance().execCMD(dto.getPath(), command + dto.getFileName());
+        }else{
+            return cmdUtils.createInstance().execCMD(dto.getPath(), command + dto.getFileName() + " " + dto.getInput());
+        }
     }
 
+
     @Override
-    public String programWrapper(ProgramEntity entity) {
+    public String programWrapper(ProgramInterface entity) {
+        ProgramTemplateEntity templateEntity = templateMapper.selectById("062021122000001");
+        String template = templateEntity.getTemplate();
+        template = template.replace("{{FunctionBody}}",getFunctionBody(entity));
+        template = template.replace("{{FunctionName}}",getFunctionName(entity));
+        template = template.replace("{{Parameters}}",getParameters(entity));
+        return template;
+    }
+
+    public String programWrapper_old(ProgramDto dto) {
         String relativePath = runProgramConfig.getRelativePath();
-        String code = entity.getCode();
+        String code = dto.getCode();
         String defName = code.split("\\(")[0].replace("func ","");
 
         StringBuilder goTemplate = fileUtil.readFromClasspath(relativePath + "\\" + "Solution.go");
@@ -56,4 +75,10 @@ public class GolangRunner extends ProgramRunner {
     public String getLanguage() {
         return "golang";
     }
+
+    @Override
+    public String getFunctionName(ProgramInterface entity){
+        return entity.getCode().split("\\(")[0].replace("func ","");
+    }
+
 }

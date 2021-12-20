@@ -2,7 +2,7 @@ package com.csl.anarres.utils.ProgramRunner;
 
 import com.csl.anarres.config.RunProgramConfig;
 import com.csl.anarres.dto.ProgramRunnerDto;
-import com.csl.anarres.entity.ProgramEntity;
+import com.csl.anarres.entity.ProgramInterface;
 import com.csl.anarres.utils.CMDUtils.CMDUtils;
 import com.csl.anarres.utils.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class JavaRunner extends ProgramRunner {
     }
 
     @Override
-    public String programWrapper(ProgramEntity entity) {
+    public String programWrapper(ProgramInterface entity) {
         String relativePath = runProgramConfig.getRelativePath();
         String code = entity.getCode();
         //todo 重写一下solution.JAVA 合并在一个文件中
@@ -43,5 +43,10 @@ public class JavaRunner extends ProgramRunner {
     @Override
     public String getLanguage() {
         return "java";
+    }
+
+    @Override
+    public String getFunctionName(ProgramInterface entity) {
+        return null;
     }
 }
