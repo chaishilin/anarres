@@ -1,6 +1,6 @@
 package com.csl.anarres.service.impl;
 
-import com.csl.anarres.websocket.TestTemplate;
+import com.csl.anarres.websocket.TemplateTestWS;
 import lombok.SneakyThrows;
 
 /**
@@ -9,17 +9,14 @@ import lombok.SneakyThrows;
  * @Description:
  */
 public class ProgramTemplateRunnable implements Runnable {
-    private TestTemplate testTemplate;
-    public ProgramTemplateRunnable(TestTemplate testTemplate){
-        this.testTemplate = testTemplate;
+    private TemplateTestWS templateTestWS;
+    public ProgramTemplateRunnable(TemplateTestWS templateTestWS){
+        this.templateTestWS = templateTestWS;
     }
 
     @SneakyThrows
     @Override
     public void run() {
-        for(int i = 1; i <= 100;i++){
-            Thread.sleep(50);
-            testTemplate.boardCastMsg(i+"");
-        }
+        templateTestWS.run();
     }
 }

@@ -39,7 +39,8 @@ public class ProgramController {
     private RunProgramConfig runProgramConfig;
     @Autowired
     private LoginService loginService;
-    Logger logger = LoggerFactory.getLogger(ProgramController.class);
+
+    private Logger logger = LoggerFactory.getLogger(ProgramController.class);
 
     @RequestFrequency(value = 5)//对于请求，限制请求频率
     @RequestMapping("/programList")

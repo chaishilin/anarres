@@ -5,7 +5,7 @@ import com.csl.anarres.service.ProgramTemplateService;
 import com.csl.anarres.service.impl.ProgramTemplateRunnable;
 import com.csl.anarres.utils.ResponseTemplate;
 import com.csl.anarres.utils.ResponseUtil;
-import com.csl.anarres.websocket.TestTemplate;
+import com.csl.anarres.websocket.TemplateTestWS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +26,7 @@ public class ProgramTemplateController {
     @Autowired
     private ProgramTemplateService service;
     @Autowired
-    private TestTemplate testTemplate;
+    private TemplateTestWS templateTestWS;
     @RequestMapping("/list")
     public ResponseTemplate programTemplateList(@RequestBody ProgramTemplateEntity entity, HttpServletRequest request) {
         try {
@@ -78,10 +78,10 @@ public class ProgramTemplateController {
             // step 1.1 运行异步任务
             // step 1.2 每运行一个，向ws中更新信息
             //step 2 返回成功
-            Thread templateTest = new Thread(new ProgramTemplateRunnable(testTemplate));
+            Thread templateTest = new Thread(new ProgramTemplateRunnable(templateTestWS));
             //异步启动线程
             templateTest.start();
-            return ResponseUtil.success("ok");
+            return ResponseUtil.success("ok","ok");
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseUtil.fail("发送失败" + e.getMessage());
