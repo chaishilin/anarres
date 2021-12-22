@@ -1,5 +1,7 @@
 package com.csl.anarres.controller;
 
+import com.csl.anarres.annotation.PaserUserState;
+import com.csl.anarres.dto.ProgramTemplateDto;
 import com.csl.anarres.entity.ProgramTemplateEntity;
 import com.csl.anarres.service.ProgramTemplateService;
 import com.csl.anarres.service.impl.ProgramTemplateRunnable;
@@ -72,13 +74,13 @@ public class ProgramTemplateController {
 
 
     @PostMapping("testTemplate")
-    public ResponseTemplate doTest(@RequestBody ProgramTemplateEntity entity, HttpServletRequest request){
+    public ResponseTemplate doTest(@PaserUserState ProgramTemplateDto dto, HttpServletRequest request){
         try {
             //step 1 开启异步任务
             // step 1.1 运行异步任务
             // step 1.2 每运行一个，向ws中更新信息
             //step 2 返回成功
-            Thread templateTest = new Thread(new ProgramTemplateRunnable(templateTestWS));
+            Thread templateTest = new Thread(new ProgramTemplateRunnable(templateTestWS,dto));
             //异步启动线程
             templateTest.start();
             return ResponseUtil.success("ok","ok");

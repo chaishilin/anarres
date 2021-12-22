@@ -63,7 +63,6 @@ public class ProgramController {
             } else {
                 //如果没有登录，或者请求的createrId是public,就返回公共列表
                 entity.setPublicState("01");
-
                 result = programService.programList(entity);
                 msg = "公共程序清单";
             }

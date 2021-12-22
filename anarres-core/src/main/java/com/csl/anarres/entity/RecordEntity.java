@@ -11,7 +11,7 @@ import java.util.Date;
  * @Description:
  */
 @Data
-public class RecordEntity {
+public abstract class RecordEntity {
     //创造者Id
     @TableField("CREATER_ID")
     private String createrId;

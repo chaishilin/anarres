@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
 import javax.websocket.Session;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author: Shilin Chai
@@ -18,32 +18,38 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 @Component
 public abstract class BaseWebSocket {
-    private Logger logger = LoggerFactory.getLogger(BaseWebSocket.class);
+    protected Logger logger = LoggerFactory.getLogger(BaseWebSocket.class);
 
     //静态变量，对象之间共享
-    private static CopyOnWriteArraySet<Session> sessionSet = new CopyOnWriteArraySet<Session>();
+    private static Map<String, Session> sessionMap = new ConcurrentHashMap<>();//key->session
+    private static Map<String, String> idMap = new ConcurrentHashMap<>();//sessionId->key
 
-    public static CopyOnWriteArraySet<Session> getSessionSet() {
-        return new CopyOnWriteArraySet<>(sessionSet);//返回一份拷贝
+    public static ConcurrentHashMap<String, Session> getConcurrentHashMap() {
+        return new ConcurrentHashMap<>(sessionMap);//返回一份拷贝
     }
 
-    public static void addSessionSet(Session session) {
-        sessionSet.add(session);
+    public static Map<String, String> getIdMap() {
+        return new ConcurrentHashMap<>(idMap);//返回一份拷贝
     }
 
-    public static void removeSessionSet(Session session) {
-        sessionSet.remove(session);
+    public static void addSession(String key,Session session) {
+        if(key != null && !"".equals(key)){
+            sessionMap.put(key,session);
+            idMap.put(session.getId(),key);
+        }else{
+            sessionMap.put(session.getId(),session);
+            idMap.put(session.getId(),session.getId());
+        }
     }
 
-    @OnOpen
-    public void onOpen(Session session) {
-        addSessionSet(session);
-        logger.info("websocket add " + session.getId());
+    public static void removeSession(Session session) {
+        sessionMap.remove(idMap.get(session.getId()));
+        idMap.remove(session.getId());
     }
 
     @OnError
     public void onError(Session session, Throwable error){
-        removeSessionSet(session);
+        removeSession(session);
         logger.info("websocket remove " + session.getId());
         error.printStackTrace();
     }
@@ -55,8 +61,12 @@ public abstract class BaseWebSocket {
 
     @OnClose
     public void onClose(Session session) {
-        removeSessionSet(session);
+        removeSession(session);
         logger.info("websocket remove " + session.getId());
+    }
+
+    public void sendMsg(String key, String msg){
+        sendMsg(getConcurrentHashMap().get(key),msg);
     }
 
     public void sendMsg(Session session, String msg) {
@@ -69,7 +79,7 @@ public abstract class BaseWebSocket {
     }
 
     public void boardCastMsg(String msg) {
-        for (Session session : sessionSet) {
+        for (Session session : sessionMap.values()) {
             try {
                 session.getBasicRemote().sendText(msg);
             } catch (Exception e) {

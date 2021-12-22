@@ -18,7 +18,7 @@ public class TestTemplateIterator extends ProcessIterator {
     @Override
     public List<? extends Object> buildWorkingList() {
         List<String> temp = new ArrayList<>();
-        for(int i = 0 ; i < 1244;i++){
+        for(int i = 0 ; i < 68;i++){
             temp.add(i+"");
         }
         return temp;
@@ -27,7 +27,7 @@ public class TestTemplateIterator extends ProcessIterator {
     @Override
     public void process(Object o) {
         try {
-            Thread.sleep(3);
+            Thread.sleep(100);
         }catch (Exception e){
             e.printStackTrace();
         }
