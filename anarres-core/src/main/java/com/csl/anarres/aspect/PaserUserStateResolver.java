@@ -56,9 +56,11 @@ public class PaserUserStateResolver implements HandlerMethodArgumentResolver {
         //到此，类似于实现了@requestBody的功能
         UserEntity user = loginService.getUserInfo(request);//利用token获得userEntity
         if(user != null){
+            String userId = user.getUserId();
             setDeclaredBoolField(result,"isLogin",true);
             String createrId =(String) getDeclaredField(result,"createrId");//获取对象的createrId属性
-            if(createrId == null || !createrId.equals(user.getUserId())){
+            setDeclaredStringField(result,"userId",userId);
+            if(createrId == null || !createrId.equals(userId)){
                 setDeclaredBoolField(result,"isSelf",false);
             }else{
                 setDeclaredBoolField(result,"isSelf",true);
@@ -69,16 +71,55 @@ public class PaserUserStateResolver implements HandlerMethodArgumentResolver {
     return result;
     }
 
-    private void setDeclaredBoolField(Object o,String field,boolean value) throws NoSuchFieldException, IllegalAccessException {
-        Field createrId = o.getClass().getDeclaredField(field);//获取对象的field属性
-        createrId.setAccessible(true);
-        createrId.set(o,value);
+    private void setDeclaredStringField(Object o,String fieldName,String value) throws IllegalAccessException {
+        try {
+            Field field = findField(o.getClass(),fieldName);//获取对象的field属性
+            field.setAccessible(true);
+            field.set(o,value);
+        }catch (NoSuchFieldException ignored){
+        }
     }
-    private Object getDeclaredField(Object o,String field) throws NoSuchFieldException, IllegalAccessException {
-        Field createrId = o.getClass().getDeclaredField(field);//获取对象的createrId属性
-        createrId.setAccessible(true);
-        return  createrId.get(o);
+
+    private void setDeclaredBoolField(Object o,String fieldName,boolean value) throws IllegalAccessException {
+        try {
+            Field field = findField(o.getClass(),fieldName);//获取对象的field属性
+            field.setAccessible(true);
+            field.set(o,value);
+        }catch (NoSuchFieldException ignored){
+        }
     }
+    private Object getDeclaredField(Object o,String fieldName) throws IllegalAccessException {
+        try {
+            Field field = findField(o.getClass(),fieldName);//获取对象的属性
+            field.setAccessible(true);
+            return  field.get(o);
+        }catch (NoSuchFieldException ignore){
+            return null;
+        }
+    }
+    //todo field 相关方法独立
+    private Field findField(Class<?> clazz, String fieldName) throws NoSuchFieldException{
+        Field result = null;
+        if(clazz == null){
+            throw new NoSuchFieldException();
+        }
+        try {
+            result = clazz.getDeclaredField(fieldName);//寻找类本身的属性
+        }catch (NoSuchFieldException ignored){
+        }
+        if(result != null){
+            return result;
+        }
+        try {
+            result = clazz.getField(fieldName);//寻找父类的公有属性
+        }catch (NoSuchFieldException ignored){
+        }
+        if(result != null){
+            return result;
+        }
+        return findField(clazz.getSuperclass(),fieldName);//递归向上查找父类
+    }
+
 
 
 }
