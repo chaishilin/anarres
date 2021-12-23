@@ -1,7 +1,7 @@
 package com.csl.anarres.websocket;
 
 import com.csl.anarres.dto.ProgramTemplateDto;
-import com.csl.anarres.interfaces.impl.TestTemplateIterator;
+import com.csl.anarres.interfaces.impl.NumberGenetateIterator;
 import com.csl.anarres.service.ProcessIterator;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +21,7 @@ public class TemplateTestWS extends BaseWebSocket {
 
     public void run(ProgramTemplateDto dto) {
         try {
-            ProcessIterator processIterator = new TestTemplateIterator();
+            ProcessIterator processIterator = new NumberGenetateIterator();
             while (processIterator.hasNext()){
                 String msg = processIterator.next();
                 sendMsg(dto.getUserId(),msg);

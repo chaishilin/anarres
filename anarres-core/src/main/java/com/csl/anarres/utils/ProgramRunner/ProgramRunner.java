@@ -22,7 +22,7 @@ public abstract class ProgramRunner {
      * 运行程序,程序模板
      * @return
      */
-    public String run(ProgramDto dto){
+    public ProgramDto run(ProgramDto dto){
         dto.setClassName("Solution");//程序的类名统一明明为Solution
         savePaseredCode(dto);//临时将程序储存至本地
         return runProgram(dto);//在本地运行程结果
@@ -31,22 +31,26 @@ public abstract class ProgramRunner {
     /**
      * 运行输入的代码
      * @param code
+     * @param input
      * @return
      */
-    public String run(String code){
+    public ProgramDto run(String code, String input){
+        ProgramDto outputDto;
         ProgramDto dto = new ProgramDto();
         dto.setClassName("Solution");//程序的类名统一明明为Solution
         dto.setCode(code);
+        dto.setInput(input);
         dto.setLanguage(getLanguage());
         saveCode(dto);
-        return runProgram(dto);
+        outputDto = runProgram(dto);
+        return outputDto;
     }
 
     /**
      * 根据运行的操作系统和编程语言，调用不同的命令行参数，运行程序，获得结果
      * @param dto
      */
-    private String runProgram(ProgramDto dto) {
+    private ProgramDto runProgram(ProgramDto dto) {
         try {
             ProgramRunnerDto programRunnerDto = paserProgramRunnerDto(dto);
             String result = runCMD(programRunnerDto);
@@ -56,7 +60,7 @@ public abstract class ProgramRunner {
             dto.setError(true);
             dto.setOutput(e.getMessage());
         }
-        return dto.getOutput();
+        return dto;
     }
 
     /**

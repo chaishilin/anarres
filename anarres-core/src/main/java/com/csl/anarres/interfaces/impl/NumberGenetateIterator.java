@@ -12,7 +12,7 @@ import java.util.List;
  * @Description:
  */
 @Service
-public class TestTemplateIterator extends ProcessIterator {
+public class NumberGenetateIterator extends ProcessIterator {
 
 
     @Override

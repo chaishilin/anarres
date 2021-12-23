@@ -50,6 +50,7 @@ public class ProgramTemplateController {
             return ResponseUtil.fail("程序模板列表保存失败" + e.getMessage());
         }
     }
+
     @RequestMapping("/delete")
     public ResponseTemplate delete(@RequestBody ProgramTemplateEntity entity, HttpServletRequest request) {
         try {

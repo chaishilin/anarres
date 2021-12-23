@@ -12,7 +12,8 @@ public enum TableIdEnum {
     PROGRAMCODE("programCode","03"),
     LABEl("label","04"),
     NUMGENERATOR("numgenerator","05"),
-    PROGRAMTEMPLATE("programTemplate","06")
+    PROGRAMTEMPLATE("programTemplate","06"),
+    TESTCASE("testCase","07")
     ;
 
 
