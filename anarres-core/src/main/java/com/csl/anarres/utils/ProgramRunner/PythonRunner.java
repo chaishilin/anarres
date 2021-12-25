@@ -43,6 +43,11 @@ public class PythonRunner extends ProgramRunner {
     }
 
     @Override
+    protected String chooseDeaultTemplate() {
+        return templateMapper.selectById("062021121900025").getTemplate();
+    }
+
+    @Override
     public String getLanguage() {
         return "python";
     }

@@ -50,6 +50,11 @@ public class JavaRunner extends ProgramRunner {
     }
 
     @Override
+    protected String chooseDeaultTemplate() {
+        return templateMapper.selectById("062021122000011").getTemplate();
+    }
+
+    @Override
     public String getLanguage() {
         return "java";
     }

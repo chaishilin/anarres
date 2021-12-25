@@ -161,7 +161,7 @@ public abstract class ProgramRunner {
      * @return
      */
     public String programWrapper(ProgramInterface entity){
-        String template = chooseTemplate();
+        String template = chooseTemplate();//todo 如何传参数说明选择用哪个模板？
         template = template.replace("{{FunctionBody}}",getFunctionBody(entity));
         template = template.replace("{{FunctionName}}",getFunctionName(entity));
         template = template.replace("{{Parameters}}",getParameters(entity));
@@ -221,6 +221,12 @@ public abstract class ProgramRunner {
      * @return
      */
     protected abstract String chooseTemplate();
+
+    /**
+     * 选择默认程序模板
+     * @return
+     */
+    protected abstract String chooseDeaultTemplate();
 
     /**
      * 获得编程语言名称

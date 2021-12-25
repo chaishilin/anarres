@@ -1,7 +1,7 @@
-package com.csl.anarres.interfaces.impl;
+package com.csl.anarres.Iterators.impl;
 
-import com.csl.anarres.service.ProcessIterator;
-import org.springframework.stereotype.Service;
+import com.csl.anarres.Iterators.ProcessIterator;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
  * @Date: 2021/12/21 9:58
  * @Description:
  */
-@Service
+@Component(value = "NumberGenetate")
 public class NumberGenetateIterator extends ProcessIterator {
 
 
