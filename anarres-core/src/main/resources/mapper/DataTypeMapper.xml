@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.csl.anarres.mapper.TestCaseMapper">
-    <resultMap id="caseMap" type="com.csl.anarres.entity.TestCaseEntity">
+<mapper namespace="com.csl.anarres.mapper.DataTypeMapper">
+    <resultMap id="caseMap" type="com.csl.anarres.entity.DateTypeEntity">
         <id column="C_ID" property="caseId"></id>
         <result column="LANGUAGE" property="language"></result>
 
@@ -24,7 +24,7 @@
     <sql id="TestCaseColumnAll">
         C_ID,LANGUAGE,CODE,INPUT,OUTPUT,TITLE,CONTENT,STATE,CREATER_ID,CREATE_TIME,LAST_MODIFIED_TIME
     </sql>
-    <select id="findTestCaseList" resultMap="caseMap">
+    <select id="findDataTypeList" resultMap="caseMap">
         select
         <include refid="TestCaseColumnAll"/>
         from testCase tc

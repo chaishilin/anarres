@@ -13,7 +13,7 @@ public enum TableIdEnum {
     LABEl("label","04"),
     NUMGENERATOR("numgenerator","05"),
     PROGRAMTEMPLATE("programTemplate","06"),
-    TESTCASE("testCase","07")
+    DATATYPE("dateType","07")
     ;
 
 

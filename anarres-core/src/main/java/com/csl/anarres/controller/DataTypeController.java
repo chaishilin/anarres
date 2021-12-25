@@ -1,9 +1,9 @@
 package com.csl.anarres.controller;
 
 import com.csl.anarres.dto.ProgramDto;
-import com.csl.anarres.entity.TestCaseEntity;
+import com.csl.anarres.entity.DateTypeEntity;
 import com.csl.anarres.exception.RunProgramException;
-import com.csl.anarres.service.TestCaseService;
+import com.csl.anarres.service.DataTypeService;
 import com.csl.anarres.utils.ResponseTemplate;
 import com.csl.anarres.utils.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +20,15 @@ import java.util.List;
  * @Description:
  */
 @RestController
-@RequestMapping(value = "/testCase")
-public class TestCaseController {
+@RequestMapping(value = "/dataType")
+public class DataTypeController {
     @Autowired
-    private TestCaseService service;
+    private DataTypeService service;
 
     @RequestMapping(value = "/list")
-    public ResponseTemplate list(@RequestBody TestCaseEntity entity, HttpServletRequest request) {
+    public ResponseTemplate list(@RequestBody DateTypeEntity entity, HttpServletRequest request) {
         try {
-            List<TestCaseEntity> result = service.select(entity);
+            List<DateTypeEntity> result = service.select(entity);
             return ResponseUtil.success("程序模板测试用例查询成功", result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -37,7 +37,7 @@ public class TestCaseController {
     }
 
     @RequestMapping(value = "/save")
-    public ResponseTemplate update(@RequestBody TestCaseEntity entity, HttpServletRequest request) {
+    public ResponseTemplate update(@RequestBody DateTypeEntity entity, HttpServletRequest request) {
         try {
             entity.setState("02");
             String result = service.save(entity);
@@ -49,7 +49,7 @@ public class TestCaseController {
     }
 
     @RequestMapping(value = "/delete")
-    public ResponseTemplate delete(@RequestBody TestCaseEntity entity, HttpServletRequest request) {
+    public ResponseTemplate delete(@RequestBody DateTypeEntity entity, HttpServletRequest request) {
         try {
             String result = service.softDelete(entity);
             return ResponseUtil.success("程序模板测试用例删除成功", result);
@@ -60,7 +60,7 @@ public class TestCaseController {
     }
 
     @RequestMapping(value = "/enable")
-    public ResponseTemplate enable(@RequestBody TestCaseEntity entity, HttpServletRequest request) {
+    public ResponseTemplate enable(@RequestBody DateTypeEntity entity, HttpServletRequest request) {
         try {
             //step1 : run
             ProgramDto testResult = service.run(entity);
