@@ -1,8 +1,7 @@
 package com.csl.anarres.websocket;
 
-import com.csl.anarres.Iterators.IteratorFactory;
 import com.csl.anarres.dto.ProgramTemplateDto;
-import com.csl.anarres.Iterators.ProcessIterator;
+import com.csl.anarres.utils.IterableProcess.impl.TemplateTestProcess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,13 +19,14 @@ import javax.websocket.server.ServerEndpoint;
 @ServerEndpoint("/testTemplate/{id}")
 public class TemplateTestWS extends BaseWebSocket {
     @Autowired
-    private IteratorFactory iteratorFactory;
+    private TemplateTestProcess process;
+
     public void run(ProgramTemplateDto dto) {
         try {
-            ProcessIterator processIterator = iteratorFactory.getIterator("TemplateTest");
-            while (processIterator.hasNext()){
-                String msg = processIterator.next();
-                sendMsg(dto.getUserId(),msg);
+            process.generateWorkingList(dto);
+            for (Object processResult : process) {
+                String msg = (String) processResult;
+                sendMsg(dto.getUserId(), msg);
             }
         }catch (Exception e){
             e.printStackTrace();

@@ -23,13 +23,13 @@ public class DataTypeServiceImpl implements DataTypeService {
     private DataTypeMapper mapper;
     @Autowired
     private NumberGenerator numberGenerator;
-//    @Autowired
-//    private ProgramRunnerFactory programRunnerFactory;
+
     @Override
     public List<DataTypeEntity> select(DataTypeEntity entity) {
+        //todo mapper层重新写
         QueryWrapper<DataTypeEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.ne("STATE","00");
-        queryWrapper.ne("LANGUAGE","java");
+        queryWrapper.eq("LANGUAGE","java");
         if(entity.getDataTypeId() != null && !"".equals(entity.getDataTypeId())){
             queryWrapper.eq("D_ID",entity.getDataTypeId());
         }

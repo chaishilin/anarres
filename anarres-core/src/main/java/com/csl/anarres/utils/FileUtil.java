@@ -22,7 +22,6 @@ public class FileUtil {
     @Autowired
     RunProgramConfig runProgramConfig;
     public Path saveToPath(String path, String code){
-        System.out.println("saveToPath "+path);
         Path result = null;
         try{
             result = Files.write(Paths.get(path), code.getBytes());
