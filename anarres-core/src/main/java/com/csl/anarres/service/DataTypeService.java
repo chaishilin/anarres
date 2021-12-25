@@ -1,7 +1,7 @@
 package com.csl.anarres.service;
 
 import com.csl.anarres.dto.ProgramDto;
-import com.csl.anarres.entity.DateTypeEntity;
+import com.csl.anarres.entity.DataTypeEntity;
 
 import java.util.List;
 
@@ -16,26 +16,26 @@ public interface DataTypeService {
      * @param entity
      * @return
      */
-    List<DateTypeEntity> select(DateTypeEntity entity);
+    List<DataTypeEntity> select(DataTypeEntity entity);
 
     /**
      * 修改
      * @param entity
      * @return id
      */
-    String save(DateTypeEntity entity);
+    String save(DataTypeEntity entity);
 
     /**
      * 删除
      * @param entity
      * @return
      */
-    String softDelete(DateTypeEntity entity);
+    String softDelete(DataTypeEntity entity);
 
     /**
      * 运行测试
      * @param entity
      * @return
      */
-    ProgramDto run(DateTypeEntity entity);
+    ProgramDto run(DataTypeEntity entity);
 }

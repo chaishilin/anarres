@@ -2,11 +2,12 @@ package com.csl.anarres.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.csl.anarres.dto.ProgramDto;
-import com.csl.anarres.entity.DateTypeEntity;
+import com.csl.anarres.entity.DataTypeEntity;
 import com.csl.anarres.enums.TableIdEnum;
 import com.csl.anarres.mapper.DataTypeMapper;
 import com.csl.anarres.service.DataTypeService;
 import com.csl.anarres.utils.NumberGenerator;
+import com.csl.anarres.utils.ProgramRunner.ProgramRunner;
 import com.csl.anarres.utils.ProgramRunner.ProgramRunnerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,8 +28,8 @@ public class DataTypeServiceImpl implements DataTypeService {
     @Autowired
     private ProgramRunnerFactory programRunnerFactory;
     @Override
-    public List<DateTypeEntity> select(DateTypeEntity entity) {
-        QueryWrapper<DateTypeEntity> queryWrapper = new QueryWrapper<>();
+    public List<DataTypeEntity> select(DataTypeEntity entity) {
+        QueryWrapper<DataTypeEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.ne("STATE","00");
         if(entity.getDataTypeId() != null && !"".equals(entity.getDataTypeId())){
             queryWrapper.eq("D_ID",entity.getDataTypeId());
@@ -37,7 +38,7 @@ public class DataTypeServiceImpl implements DataTypeService {
     }
 
     @Override
-    public String save(DateTypeEntity entity) {
+    public String save(DataTypeEntity entity) {
         String caseId = null;
         if(entity.getDataTypeId() == null || "".equals(entity.getDataTypeId())){
             //新增
@@ -52,14 +53,17 @@ public class DataTypeServiceImpl implements DataTypeService {
     }
 
     @Override
-    public String softDelete(DateTypeEntity entity) {
+    public String softDelete(DataTypeEntity entity) {
         entity.setState("00");
         mapper.updateById(entity);
         return entity.getDataTypeId();
     }
 
     @Override
-    public ProgramDto run(DateTypeEntity entity) {
-        return new ProgramDto();
+    public ProgramDto run(DataTypeEntity entity) {
+        ProgramRunner runner = programRunnerFactory.getRunner(entity.getLanguage());
+        String code = runner.generateSimpleFunction(entity);
+        ProgramDto result = runner.runWithTemplate(code,entity.getExample());
+        return result;
     }
 }

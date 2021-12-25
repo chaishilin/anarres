@@ -19,14 +19,14 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @TableName("dataType")
-public class DateTypeEntity extends RecordEntity{
+public class DataTypeEntity extends RecordEntity{
     //程序id
     @TableId(value = "D_ID",type = IdType.INPUT)
     private String dataTypeId;
     //程序语言
     @TableField("LANGUAGE")
     private String language;
-    //测试程序具体的代码内容
+    //数据类型定义
     @TableField("DEFINITION")
     private String definition;
     //测试用例输入示例

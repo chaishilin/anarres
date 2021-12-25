@@ -36,6 +36,10 @@ public class GolangRunner extends ProgramRunner {
     }
 
     @Override
+    public String simpleFunction() {
+        return null;
+    }
+    @Override
     protected String chooseTemplate() {
         return templateMapper.selectById("062021122000001").getTemplate();
     }

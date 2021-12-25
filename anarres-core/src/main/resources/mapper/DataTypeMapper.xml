@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.csl.anarres.mapper.DataTypeMapper">
-    <resultMap id="caseMap" type="com.csl.anarres.entity.DateTypeEntity">
+    <resultMap id="caseMap" type="com.csl.anarres.entity.DataTypeEntity">
         <id column="C_ID" property="caseId"></id>
         <result column="LANGUAGE" property="language"></result>
 

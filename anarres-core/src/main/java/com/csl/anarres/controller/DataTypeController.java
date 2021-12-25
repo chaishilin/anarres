@@ -1,7 +1,7 @@
 package com.csl.anarres.controller;
 
 import com.csl.anarres.dto.ProgramDto;
-import com.csl.anarres.entity.DateTypeEntity;
+import com.csl.anarres.entity.DataTypeEntity;
 import com.csl.anarres.exception.RunProgramException;
 import com.csl.anarres.service.DataTypeService;
 import com.csl.anarres.utils.ResponseTemplate;
@@ -26,9 +26,9 @@ public class DataTypeController {
     private DataTypeService service;
 
     @RequestMapping(value = "/list")
-    public ResponseTemplate list(@RequestBody DateTypeEntity entity, HttpServletRequest request) {
+    public ResponseTemplate list(@RequestBody DataTypeEntity entity, HttpServletRequest request) {
         try {
-            List<DateTypeEntity> result = service.select(entity);
+            List<DataTypeEntity> result = service.select(entity);
             return ResponseUtil.success("程序模板测试用例查询成功", result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -37,7 +37,7 @@ public class DataTypeController {
     }
 
     @RequestMapping(value = "/save")
-    public ResponseTemplate update(@RequestBody DateTypeEntity entity, HttpServletRequest request) {
+    public ResponseTemplate update(@RequestBody DataTypeEntity entity, HttpServletRequest request) {
         try {
             entity.setState("02");
             String result = service.save(entity);
@@ -49,7 +49,7 @@ public class DataTypeController {
     }
 
     @RequestMapping(value = "/delete")
-    public ResponseTemplate delete(@RequestBody DateTypeEntity entity, HttpServletRequest request) {
+    public ResponseTemplate delete(@RequestBody DataTypeEntity entity, HttpServletRequest request) {
         try {
             String result = service.softDelete(entity);
             return ResponseUtil.success("程序模板测试用例删除成功", result);
@@ -60,7 +60,7 @@ public class DataTypeController {
     }
 
     @RequestMapping(value = "/enable")
-    public ResponseTemplate enable(@RequestBody DateTypeEntity entity, HttpServletRequest request) {
+    public ResponseTemplate enable(@RequestBody DataTypeEntity entity, HttpServletRequest request) {
         try {
             //step1 : run
             ProgramDto testResult = service.run(entity);
@@ -74,7 +74,7 @@ public class DataTypeController {
             return ResponseUtil.success("程序模板测试用例启用成功", result);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseUtil.fail("程序模板测试用例启用失败" + e.getMessage());
+            return ResponseUtil.fail("程序模板测试用例启用失败\n" + e.getMessage());
         }
     }
 

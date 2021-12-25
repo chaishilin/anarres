@@ -33,6 +33,11 @@ public class PythonRunner extends ProgramRunner {
     }
 
     @Override
+    public String simpleFunction() {
+        return "def func1({{params}}):\n" +
+                "\treturn ";
+    }
+    @Override
     protected String chooseTemplate() {
         return templateMapper.selectById("062021121900025").getTemplate();
     }

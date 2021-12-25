@@ -1,7 +1,7 @@
 package com.csl.anarres.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.csl.anarres.entity.DateTypeEntity;
+import com.csl.anarres.entity.DataTypeEntity;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -11,6 +11,6 @@ import java.util.List;
  * @Date: 2021/12/22 14:32
  * @Description:
  */
-public interface DataTypeMapper extends BaseMapper<DateTypeEntity> {
-    List<DateTypeEntity> findDataTypeList(@Param("query") DateTypeEntity entity);
+public interface DataTypeMapper extends BaseMapper<DataTypeEntity> {
+    List<DataTypeEntity> findDataTypeList(@Param("query") DataTypeEntity entity);
 }

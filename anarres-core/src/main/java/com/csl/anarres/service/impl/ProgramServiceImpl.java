@@ -71,7 +71,7 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public void doProgram(ProgramDto dto) {
-        programRunnerFactory.getRunner(dto.getLanguage()).run(dto);
+        programRunnerFactory.getRunner(dto.getLanguage()).runWithTemplate(dto);
     }
 
     @Override

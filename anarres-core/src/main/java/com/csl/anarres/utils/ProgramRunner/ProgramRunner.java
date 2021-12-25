@@ -3,10 +3,14 @@ package com.csl.anarres.utils.ProgramRunner;
 import com.csl.anarres.config.RunProgramConfig;
 import com.csl.anarres.dto.ProgramDto;
 import com.csl.anarres.dto.ProgramRunnerDto;
+import com.csl.anarres.entity.DataTypeEntity;
 import com.csl.anarres.entity.ProgramInterface;
 import com.csl.anarres.enums.SupportLanguage;
 import com.csl.anarres.utils.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author: Shilin Chai
@@ -22,10 +26,38 @@ public abstract class ProgramRunner {
      * 运行程序,程序模板
      * @return
      */
-    public ProgramDto run(ProgramDto dto){
+    public ProgramDto runWithTemplate(ProgramDto dto){
         dto.setClassName("Solution");//程序的类名统一明明为Solution
         savePaseredCode(dto);//临时将程序储存至本地
         return runProgram(dto);//在本地运行程结果
+    }
+
+    /**
+     * 运行程序,程序模板
+     * @return
+     */
+    public ProgramDto runWithTemplate(String code){
+        return runWithTemplate(code,null);
+    }
+
+    /**
+     * 运行程序,程序模板
+     * @return
+     */
+    public ProgramDto runWithTemplate(String code,String input){
+        ProgramDto dto = new ProgramDto();
+        dto.setCode(code);
+        dto.setInput(input);
+        dto.setLanguage(getLanguage());
+        return runWithTemplate(dto);
+    }
+
+    /**
+     * 运行程序,程序模板
+     * @return
+     */
+    public ProgramDto run(String code){
+        return run(code,null);//在本地运行程结果
     }
 
     /**
@@ -134,6 +166,54 @@ public abstract class ProgramRunner {
         template = template.replace("{{FunctionName}}",getFunctionName(entity));
         template = template.replace("{{Parameters}}",getParameters(entity));
         return template;
+    }
+
+    /**
+     * 该语言的简单函数体
+     * @return
+     */
+    public abstract String simpleFunction();
+
+    /**
+     * 生成(单个)函数入参
+     * @param dataTypeEntity
+     * @return
+     */
+    private String generateParam(DataTypeEntity dataTypeEntity){
+        return dataTypeEntity.getDefinition() + " a";
+    }
+
+    /**
+     * 生成(单个)函数入参
+     * @param dataTypeEntity
+     * @return
+     */
+    private String generateParamWithName(DataTypeEntity dataTypeEntity, String name){
+        return generateParam(dataTypeEntity) + name;
+    }
+
+    /**
+     * 生成(多个)函数入参
+     * @param entities
+     * @return
+     */
+    public String generateParams(List<DataTypeEntity> entities){
+        StringBuilder result = new StringBuilder();
+        entities.stream()
+                .map(entity -> result.append(generateParamWithName(entity,entities.indexOf(entity)+"")+","))
+                .collect(Collectors.toList())
+                ;
+        return result.toString().substring(0,result.length()-1);
+    }
+
+    /**
+     * 根据输入的参数类型，生成简单函数体
+     * @return
+     */
+    public String generateSimpleFunction(DataTypeEntity dataTypeEntity){
+        String funcBody = simpleFunction();
+        String result = funcBody.replace("{{params}}", generateParam(dataTypeEntity));
+        return result;
     }
 
     /**

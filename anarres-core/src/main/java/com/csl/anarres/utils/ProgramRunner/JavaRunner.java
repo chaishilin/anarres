@@ -27,14 +27,21 @@ public class JavaRunner extends ProgramRunner {
 
     private final String java = "java";
     private final String javac = "javac";
+
     @Override
     public String runCMD(ProgramRunnerDto dto) {
-        cmdUtils.createInstance().execCMD(dto.getPath(),javac +" " + dto.getFileName());
-        if(dto.getInput() == null){
-            return cmdUtils.createInstance().execCMD(dto.getPath(), java+" " + dto.getClassName());
-        }else{
-            return cmdUtils.createInstance().execCMD(dto.getPath(), java+" " + dto.getClassName() + "  " + dto.getInput());
+        cmdUtils.createInstance().execCMD(dto.getPath(), javac + " " + dto.getFileName());
+        if (dto.getInput() == null) {
+            return cmdUtils.createInstance().execCMD(dto.getPath(), java + " " + dto.getClassName());
+        } else {
+            return cmdUtils.createInstance().execCMD(dto.getPath(), java + " " + dto.getClassName() + "  " + dto.getInput());
         }
+    }
+
+    @Override
+    public String simpleFunction() {
+        return "public void func1({{params}}){\n" +
+                "    }";
     }
 
     @Override
@@ -49,6 +56,6 @@ public class JavaRunner extends ProgramRunner {
 
     @Override
     public String getFunctionName(ProgramInterface entity) {
-        return entity.getCode().split("\\(")[0].replace("public ","").split(" ")[1];
+        return entity.getCode().split("\\(")[0].replace("public ", "").split(" ")[1];
     }
 }
