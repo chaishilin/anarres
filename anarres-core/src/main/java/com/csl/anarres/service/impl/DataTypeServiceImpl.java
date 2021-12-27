@@ -7,6 +7,8 @@ import com.csl.anarres.enums.TableIdEnum;
 import com.csl.anarres.mapper.DataTypeMapper;
 import com.csl.anarres.service.DataTypeService;
 import com.csl.anarres.utils.NumberGenerator;
+import com.csl.anarres.utils.ProgramRunner.ProgramRunner;
+import com.csl.anarres.utils.ProgramRunner.ProgramRunnerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,13 +25,14 @@ public class DataTypeServiceImpl implements DataTypeService {
     private DataTypeMapper mapper;
     @Autowired
     private NumberGenerator numberGenerator;
+    @Autowired
+    private ProgramRunnerFactory programRunnerFactory;
 
     @Override
     public List<DataTypeEntity> select(DataTypeEntity entity) {
         //todo mapper层重新写
         QueryWrapper<DataTypeEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.ne("STATE","00");
-        queryWrapper.eq("LANGUAGE","java");
         if(entity.getDataTypeId() != null && !"".equals(entity.getDataTypeId())){
             queryWrapper.eq("D_ID",entity.getDataTypeId());
         }
@@ -60,10 +63,9 @@ public class DataTypeServiceImpl implements DataTypeService {
 
     @Override
     public ProgramDto run(DataTypeEntity entity) {
-//        ProgramRunner runner = programRunnerFactory.getRunner(entity.getLanguage());
-//        String code = runner.generateSimpleFunction(entity);
-//        ProgramDto result = runner.runWithTemplate(code,entity.getExample());
-//        return result;
-        return new ProgramDto();
+        ProgramRunner runner = programRunnerFactory.getRunner(entity.getLanguage());
+        String code = runner.generateSimpleFunction(entity);
+        ProgramDto result = runner.runWithTemplate(code,entity.getExample());
+        return result;
     }
 }

@@ -26,6 +26,7 @@ public class TemplateTestWS extends BaseWebSocket {
             process.generateWorkingList(dto);
             for (Object processResult : process) {
                 String msg = (String) processResult;
+                //todo msg改成结构体，返回当前进度、正确个数、错误个数、错误信息
                 sendMsg(dto.getUserId(), msg);
             }
         }catch (Exception e){
